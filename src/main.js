@@ -1,3 +1,4 @@
+import 'https://cdn.jsdelivr.net/gh/oskarrough/rough-spinner/rough-spinner.js'
 import { html, render } from 'https://unpkg.com/lit-html?module'
 import { getAccessToken, extractSpotifyPlaylistId, getSpotifyPlaylist, parseSpotifyTrack, searchYoutube } from './helpers.js'
 
@@ -35,10 +36,8 @@ async function handleSubmit(event) {
 		const playlist = await getSpotifyPlaylist(playlistId, formData.get('token'))
 		const tracks = playlist.map(parseSpotifyTrack)
 		for (const [i, t] of Object.entries(tracks)) {
-      const log = `Matching ${Number(i) + 1}/${tracks.length}...`
-      event.target.querySelector('[name="debug"]').textContent = log
 			tracks[i].searchResults = await searchYoutube(t.artist, t.title, t.isrc, limit)
-		  displayResults(tracks)
+		  displayResults(tracks, i)
 		}
 		console.log('spotify tracks with youtube search results', tracks)
 		displayResults(tracks)
@@ -50,8 +49,9 @@ async function handleSubmit(event) {
 	}
 }
 
-function displayResults(tracks) {
-	render(tableTemplate(tracks), document.querySelector('#app'))
+function displayResults(tracks, i) {
+  // render(, event.target.querySelector('[name="debug"]'))
+	render(tableTemplate(tracks, i), document.querySelector('#app'))
 }
 
 const searchResultTemplate = (track, video) => html`
@@ -61,7 +61,7 @@ const searchResultTemplate = (track, video) => html`
       <img src=${video.thumbnail} alt=${video.title} />
     </label>
 		<ul>
-		  <li><a href=${video.url} target="_blank">${video.title}</a></li>
+		  <li><a href=${`https://www.youtube.com/watch?v=` + video.id} target="_blank">${video.title}</a></li>
 			${video.description ? html`<li>${video.description}</li>` : ''}
 			<li><small>
       ${video.channelTitle ? html`${video.channelTitle}, ` : ''}
@@ -81,12 +81,13 @@ function saveResults(event) {
   $output.value = youtubeIds.map(id => `https://www.youtube.com/watch?v=${id}`).join('\r\n')
 }
 
-const tableTemplate = (tracks) => html`
+const tableTemplate = (tracks, i) => html`
+  ${i ? html`<rough-spinner spinner="1" fps="30"></rough-spinner> Matching ${Number(i) + 1}/${tracks.length}...` : null}
   <form @submit=${saveResults}>
 	  <ul class="tracks">
       ${tracks.map(
         (track, i) => html`<li>
-          <strong>${i}. ${track.title}</strong>
+          <strong>${Number(i) + 1}. ${track.artist} - ${track.title}</strong>
           <ul class="results">
             ${track.searchResults.map((video) => searchResultTemplate(track, video))}
           </ul>
