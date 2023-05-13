@@ -11,35 +11,11 @@
 	<body>
 
     <header>
-		  <h1>Spotify &rarr; YouTube</h1>
-      <p><big>Convert a Spotify playlist to a list of YouTube videos</big></p>
+      <h1>Convert Spotify playlist &rarr; YouTube videos &rarr; Radio4000 tracks</h1>
     </header>
 
     <main>
-      <p>
-        First, <a href="https://developer.spotify.com/dashboard/">find your Spotify API <code>client id</code> and
-        <code>secret</code>.</a><br>
-        If you already have a token, this is not needed.
-      </p>
-
-
-      <form id="spotifyToYoutube">
-        <label for="clientId">Client id</label>
-        <input type="text" name="clientId" /><br>
-        <label for="clientSecret">Client secret</label>
-        <input type="text" name="clientSecret" /><br>
-        <label for="token">Spotify token</label>
-        <input name="token"><br>
-        <label for="url">Playlist URL</label>
-        <input
-          type="text"
-          name="url"
-          value="https://open.spotify.com/playlist/7kqQXkLFuIZFScIuXFaJHe?si=a07c2e4802c54886"
-          required
-        /><br>
-        <button type="submit">Find matches</button>
-      </form>
-      <div id="app"></div>
+      <spotify-to-youtube></spotify-to-youtube>
     </main>
 
     <footer>
