@@ -38,7 +38,7 @@ export function getSpotifyPlaylist(playlistId, token) {
 }
 
 // Take what we need from the response.
-export function parseSpotifyTrack({ track }) {
+export function parseSpotifyTrack(track) {
 	return {
 		id: track.id,
 		isrc: track.external_ids.isrc,
@@ -47,6 +47,7 @@ export function parseSpotifyTrack({ track }) {
 		preview_url: track.preview_url,
 		image: track.album.images[0].url,
 		searchResults: [],
+    url: `https://open.spotify.com/track/${track.id}`
 	}
 }
 

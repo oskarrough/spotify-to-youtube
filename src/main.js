@@ -2,57 +2,77 @@ import 'https://cdn.jsdelivr.net/gh/oskarrough/rough-spinner/rough-spinner.js'
 import { html, render } from 'https://unpkg.com/lit-html?module'
 import { getAccessToken, extractSpotifyPlaylistId, getSpotifyPlaylist, parseSpotifyTrack, searchYoutube } from './helpers.js'
 
+
 // Get and set the Spotify access token
-document.querySelector('#spotifyTokenForm').addEventListener('submit', handleSpotifyTokenSubmit)
+document.querySelector('#spotifyToYoutube').addEventListener('submit', handleSpotifyTokenSubmit)
+
 export async function handleSpotifyTokenSubmit(event) {
 	event.preventDefault()
-	const formData = new FormData(event.target)
-	const clientId = formData.get('clientId')
-	const clientSecret = formData.get('clientSecret')
-  const $tokenInput = document.querySelector('[name="token"]')
-	try {
-		const token = await getAccessToken(clientId, clientSecret)
-		// Add it to the next form.
-		$tokenInput.value = token
-	} catch (error) {
-		console.error('An error occurred:', error)
-		$tokenInput.value = 'ERROR GETTING TOKEN!'
-	}
-}
 
-// Query the playlist, search the tube for tracks and display results
-document.querySelector('#playlistForm').addEventListener('submit', handleSubmit)
-async function handleSubmit(event) {
-	event.preventDefault()
+  const $form = event.target
+	const formData = new FormData($form)
 
-	const submitBtn = event.target.querySelector('button[type="submit"]')
-	submitBtn.disabled = true
+	const $btn = $form.querySelector('button[type="submit"]')
+	const $token = $form.querySelector('[name="token"]')
+	$btn.disabled = true
 
-	const formData = new FormData(event.target)
-	const playlistId = extractSpotifyPlaylistId(formData.get('url'))
-  const limit = 4 //formData.get('limit')
+  // Get the Spotify token
+	let token = formData.get('token')
+  if (!token) {
+    try {
+      const clientId = formData.get('clientId')
+      const clientSecret = formData.get('clientSecret')
+      token = await getAccessToken(clientId, clientSecret)
+      $token.value = token
+    } catch (error) {
+      console.error('An error occurred:', error)
+      $token.value = 'ERROR GETTING TOKEN!'
+    }
+  }
 
 	try {
-		const playlist = await getSpotifyPlaylist(playlistId, formData.get('token'))
-		const tracks = playlist.map(parseSpotifyTrack)
+    // Query the playlist
+	  const playlistId = extractSpotifyPlaylistId(formData.get('url'))
+		const playlist = await getSpotifyPlaylist(playlistId, token)
+		const tracks = playlist.map(item => parseSpotifyTrack(item.track)).slice(0,3)
+
+    // Search YouTube and render as results come in
+    const maxResults = 4 //formData.get('limit')
 		for (const [i, t] of Object.entries(tracks)) {
-			tracks[i].searchResults = await searchYoutube(t.artist, t.title, t.isrc, limit)
+			tracks[i].searchResults = await searchYoutube(t.artist, t.title, t.isrc, maxResults)
 		  displayResults(tracks, i)
 		}
-		console.log('spotify tracks with youtube search results', tracks)
-		displayResults(tracks)
+    console.log('Spotify tracks with YouTube search results', tracks)
 	} catch (error) {
 		console.error('An error occurred:', error)
 	} finally {
-		submitBtn.disabled = false
-    event.target.querySelector('[name="debug"]').textContent = ''
+		$btn.disabled = false
 	}
 }
 
 function displayResults(tracks, i) {
-  // render(, event.target.querySelector('[name="debug"]'))
-	render(tableTemplate(tracks, i), document.querySelector('#app'))
+	render(tableTemplate(tracks, Number(i) + 1), document.querySelector('#app'))
 }
+
+const tableTemplate = (tracks, i) => html`
+  ${i < tracks.length ? html`<rough-spinner spinner="1" fps="30"></rough-spinner> Matching ${i}/${tracks.length}...` : null}
+  <form @submit=${saveResults}>
+	  <ul class="tracks">
+      ${tracks.map(
+        (track, i) => html`<li>
+          <strong>${i}. ${track.artist} - ${track.title}</strong>
+          <a target="_blank" href=${track.url}>link</a>
+          <ul class="results">
+            ${track.searchResults.map((video) => searchResultTemplate(track, video))}
+          </ul>
+        </li>`
+      )}
+    </ul>
+    <button type="submit">Save results</button><br>
+    <br>
+    <textarea></textarea>
+  </form>
+`
 
 const searchResultTemplate = (track, video) => html`
 	<li>
@@ -70,6 +90,7 @@ const searchResultTemplate = (track, video) => html`
 	</li>
 `
 
+// Inserts a newline with the YouTube URL for every matched track
 function saveResults(event) {
   event.preventDefault()
   const fd = new FormData(event.target)
@@ -81,20 +102,3 @@ function saveResults(event) {
   $output.value = youtubeIds.map(id => `https://www.youtube.com/watch?v=${id}`).join('\r\n')
 }
 
-const tableTemplate = (tracks, i) => html`
-  ${i ? html`<rough-spinner spinner="1" fps="30"></rough-spinner> Matching ${Number(i) + 1}/${tracks.length}...` : null}
-  <form @submit=${saveResults}>
-	  <ul class="tracks">
-      ${tracks.map(
-        (track, i) => html`<li>
-          <strong>${Number(i) + 1}. ${track.artist} - ${track.title}</strong>
-          <ul class="results">
-            ${track.searchResults.map((video) => searchResultTemplate(track, video))}
-          </ul>
-        </li>`
-      )}
-    </ul>
-    <button type="submit">Save results</button><br>
-    <textarea></textarea>
-  </form>
-`

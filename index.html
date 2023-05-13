@@ -9,37 +9,42 @@
 		<script type="module" src="./src/main.js"></script>
 	</head>
 	<body>
-		<h1>Spotify playlist &rarr; list of YouTube videos</h1>
-		<p>
-			1. Enter your <a href="https://developer.spotify.com/dashboard/">Spotify API</a> <code>client id</code> and
-			<code>client secret</code>:
-		</p>
-		<form id="spotifyTokenForm">
-			<label for="clientId">Client ID</label>
-			<input type="text" name="clientId" required /><br>
-			<label for="clientSecret">Client Secret</label>
-			<input type="text" name="clientSecret" required /><br>
-			<button type="submit">Get Token</button>
-		</form>
-		
-		<p>2. Enter the Spotify playlist url:</p>
-		<form id="playlistForm">
-			<label for="token">Spotify token</label>
-			<input name="token" required /><br>
-			<label for="url">Playlist URL</label>
-			<input
-				type="text"
-				name="url"
-				value="https://open.spotify.com/playlist/7kqQXkLFuIZFScIuXFaJHe?si=a07c2e4802c54886"
-				required
-			/><br>
-			<button type="submit">Find matches</button>
-      <p name="debug"></p>
-		</form>
 
-		
-		<p>3. Select the videos you want to save</p>
-		<div id="app"></div>
+    <header>
+		  <h1>Spotify &rarr; YouTube</h1>
+      <p><big>Convert a Spotify playlist to a list of YouTube videos</big></p>
+    </header>
+
+    <main>
+      <p>
+        First, <a href="https://developer.spotify.com/dashboard/">find your Spotify API <code>client id</code> and
+        <code>secret</code>.</a><br>
+        If you already have a token, this is not needed.
+      </p>
+
+
+      <form id="spotifyToYoutube">
+        <label for="clientId">Client id</label>
+        <input type="text" name="clientId" /><br>
+        <label for="clientSecret">Client secret</label>
+        <input type="text" name="clientSecret" /><br>
+        <label for="token">Spotify token</label>
+        <input name="token"><br>
+        <label for="url">Playlist URL</label>
+        <input
+          type="text"
+          name="url"
+          value="https://open.spotify.com/playlist/7kqQXkLFuIZFScIuXFaJHe?si=a07c2e4802c54886"
+          required
+        /><br>
+        <button type="submit">Find matches</button>
+      </form>
+      <div id="app"></div>
+    </main>
+
+    <footer>
+      <p><a href="https://github.com/oskarrough/spotify-to-youtube">View source</a></p>
+    </footer>
 
 	</body>
 </html>
