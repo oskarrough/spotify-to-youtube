@@ -19,6 +19,7 @@ body > header {
 body > main {
 	margin: 0 auto 1rem;
 	padding: 0 1em;
+	width: 100%;
 	max-width: 50rem;
 }
 
@@ -73,4 +74,8 @@ input:not([type='radio']) {
 	max-width: 100%;
 	margin-bottom: 0.5em;
 	min-height: 1.5em;
+}
+
+details {
+	margin-bottom: 2rem;
 }

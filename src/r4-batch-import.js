@@ -31,7 +31,7 @@ export default class R4BatchImport extends LitElement {
 
 	async setChannel() {
 		const { data: channels } = await sdk.channels.readUserChannels()
-		this.channel = channels[0] || null
+		this.channel = channels?.length ? channels[0] : null
 	}
 
 	logout() {
@@ -59,7 +59,7 @@ export default class R4BatchImport extends LitElement {
 						${this.matches?.length
 							? html`
 									<p>
-										Ready to import the selected ${this.matches?.length} tracks above to your Radio4000 channel:
+										${this.matches?.length} tracks will be imported to your Radio4000 channel:
 										<strong>${this.channel.name}</strong> (@${this.channel.slug})
 									</p>
 									<form @submit=${this.submit}>

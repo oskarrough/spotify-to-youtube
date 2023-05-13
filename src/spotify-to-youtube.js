@@ -13,17 +13,16 @@ export default class SpotifyToYoutube extends LitElement {
 			tracks: { type: Array, state: true },
 			matches: { type: Array, state: true },
 			loading: { type: Boolean, state: true },
+			confirmedMatches: { type: Boolean, state: true },
 		}
 	}
 
-	spotifyToken =
-		'BQCxYimZNVjN3mvbOwgqQy97u49Xg0ArCNMvMKruiHfHrv77OOuSbHaFE4DqDc1YU0e6pR9_mZuvAuDjl7SxYA2XhT11UFJ4lbdqxEaygUi-n4iCxQ8r'
+	// spotifyToken = ''
 	maxTracks = 2
 	maxSearchResults = 3
 
 	connectedCallback() {
 		super.connectedCallback()
-
 		// Restore tracks and matches from localstorage, if present
 		const tracks = localStorage.getItem('syr.tracks')
 		if (tracks) this.tracks = JSON.parse(tracks)
@@ -94,17 +93,26 @@ export default class SpotifyToYoutube extends LitElement {
 		localStorage.setItem('syr.matches', JSON.stringify(this.matches))
 	}
 
+	confirmMatches(event) {
+		this.saveMatchingVideos(event)
+		event.preventDefault()
+		console.log('hey')
+		this.confirmedMatches = true
+	}
+
+	clearMatches() {
+		this.tracks = []
+		this.matches = []
+		localStorage.removeItem('syr.tracks')
+		localStorage.removeItem('syr.matches')
+	}
+
 	render() {
 		const i = 0
 		return html`
+			<details ?open=${!this.tracks?.length}>
+				<summary>Step 1. Import Spotify playlist and find </summary>
 			<form @submit=${this.findMatches}>
-				<label for="url">Playlist URL</label>
-				<input
-					type="text"
-					name="url"
-					value="https://open.spotify.com/playlist/7kqQXkLFuIZFScIuXFaJHe?si=a07c2e4802c54886"
-					required
-				/><br />
 				<p>
 					Find your
 					<a href="https://developer.spotify.com/dashboard/"
@@ -118,16 +126,26 @@ export default class SpotifyToYoutube extends LitElement {
 				<input type="text" name="clientSecret" /><br />
 				<label for="token">Spotify token</label>
 				<input name="token" value=${this.spotifyToken} /><br />
+				<label for="url">Playlist URL</label>
+				<input
+					type="text"
+					name="url"
+					value="https://open.spotify.com/playlist/7kqQXkLFuIZFScIuXFaJHe?si=a07c2e4802c54886"
+					required
+				/><br />
 				<button type="submit" ?disabled=${this.loading}>Find matching YouTube videos</button>
 			</form>
+			</details>
 
 			<p ?hidden=${!this.loading}>
 				<rough-spinner spinner="1" fps="30"></rough-spinner><br />
 				Matching ${i}/${this.tracks?.length}...
 			</p>
 
+			<details ?open=${this.tracks?.length && !this.confirmedMatches}>
+				<summary>Step 2. Choose your videos</summary>
 			${this.tracks?.length
-				? html` <form @input=${this.saveMatchingVideos} @submit=${this.saveMatchingVideos}>
+				? html` <form @input=${this.saveMatchingVideos} @submit=${this.confirmMatches}>
 						<ul class="tracks">
 							${this.tracks?.map(
 								(track, i) => html`<li>
@@ -141,14 +159,15 @@ export default class SpotifyToYoutube extends LitElement {
 							)}
 						</ul>
 						<button type="submit">Confirm matches</button><br />
+					<button @click=${this.clearMatches}>Clear all</button><br />
 				  </form>`
 				: ''}
-			${this.matches?.length
-				? html`
-						<h2>Import tracks to Radio4000</h2>
-						<r4-batch-import .matches=${this.matches}></r4-batch-import>
-				  `
-				: ''}
+			</details>
+
+			<details ?open=${this.matches?.length}>
+				<summary>Step 3. Import tracks to Radio4000</summary>
+				<r4-batch-import .matches=${this.matches}></r4-batch-import>
+			</details>
 		`
 	}
 
