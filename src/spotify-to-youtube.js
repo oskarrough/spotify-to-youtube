@@ -1,9 +1,7 @@
 import { LitElement, html } from 'https://unpkg.com/lit?module'
 import {
-	getAccessToken,
 	extractSpotifyPlaylistId,
 	getSpotifyPlaylist,
-	parseSpotifyTrack,
 	searchYoutube,
 } from './helpers.js'
 
@@ -37,33 +35,16 @@ export default class SpotifyToYoutube extends LitElement {
 		const $form = event.target
 		const formData = new FormData($form)
 
-		// Get the Spotify token
-		let token = formData.get('token')
-		if (!token) {
-			const $token = $form.querySelector('[name="token"]')
-			try {
-				const clientId = formData.get('clientId')
-				const clientSecret = formData.get('clientSecret')
-				token = await getAccessToken(clientId, clientSecret)
-				$token.value = token
-			} catch (error) {
-				console.error('An error occurred:', error)
-				$token.value = 'ERROR GETTING TOKEN!'
-			}
-		}
-
 		// Query the playlist
 		try {
 			const playlistId = extractSpotifyPlaylistId(formData.get('url'))
-			const playlist = await getSpotifyPlaylist(playlistId, token)
+			const playlist = await getSpotifyPlaylist(playlistId)
+      console.log('playlist', playlist)
       if (!playlist) throw new Error('Failed to fetch Spotify playlist')
-			this.tracks = playlist.map((item) => parseSpotifyTrack(item.track))
-
-			if (this.maxTracks) this.tracks = this.tracks.slice(0, this.maxTracks)
-
+			this.tracks = this.maxTracks ? playlist.tracks.slice(0, this.maxTracks) : playlist.tracks
 			// Search YouTube and render as results come in
 			for (const [i, t] of Object.entries(this.tracks)) {
-				this.tracks[i].searchResults = await searchYoutube(t.artist, t.title, t.isrc, this.maxSearchResults)
+				this.tracks[i].searchResults = await searchYoutube(t.artist, t.title, this.maxSearchResults)
 				this.requestUpdate()
 			}
 			console.log('setting tracks', this.tracks)
@@ -111,22 +92,9 @@ export default class SpotifyToYoutube extends LitElement {
 		const i = 0
 		return html`
 			<details ?open=${!this.tracks?.length}>
-				<summary>Step 1. Import Spotify playlist and find </summary>
+				<summary>Step 1. Import Spotify playlist</summary>
 			<form @submit=${this.findMatches}>
-				<p>
-					Find your
-					<a href="https://developer.spotify.com/dashboard/"
-						>Spotify API <code>client id</code> and <code>secret</code>.</a
-					><br />
-					If you already have a token, this is not needed.
-				</p>
-				<label for="clientId">Client id</label>
-				<input type="text" name="clientId" /><br />
-				<label for="clientSecret">Client secret</label>
-				<input type="text" name="clientSecret" /><br />
-				<label for="token">Spotify token</label>
-				<input name="token" value=${this.spotifyToken} /><br />
-				<label for="url">Playlist URL</label>
+				<label for="url">URL</label>
 				<input
 					type="text"
 					name="url"
