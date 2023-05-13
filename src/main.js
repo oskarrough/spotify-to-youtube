@@ -29,13 +29,16 @@ async function handleSubmit(event) {
 
 	const formData = new FormData(event.target)
 	const playlistId = extractSpotifyPlaylistId(formData.get('url'))
-  const limit = 3 //formData.get('limit')
+  const limit = 4 //formData.get('limit')
 
 	try {
 		const playlist = await getSpotifyPlaylist(playlistId, formData.get('token'))
-		const tracks = playlist.map(parseSpotifyTrack).slice(0, 3)
+		const tracks = playlist.map(parseSpotifyTrack)
 		for (const [i, t] of Object.entries(tracks)) {
+      const log = `Matching ${Number(i) + 1}/${tracks.length}...`
+      event.target.querySelector('[name="debug"]').textContent = log
 			tracks[i].searchResults = await searchYoutube(t.artist, t.title, t.isrc, limit)
+		  displayResults(tracks)
 		}
 		console.log('spotify tracks with youtube search results', tracks)
 		displayResults(tracks)
@@ -43,6 +46,7 @@ async function handleSubmit(event) {
 		console.error('An error occurred:', error)
 	} finally {
 		submitBtn.disabled = false
+    event.target.querySelector('[name="debug"]').textContent = ''
 	}
 }
 
@@ -58,8 +62,10 @@ const searchResultTemplate = (track, video) => html`
     </label>
 		<ul>
 		  <li><a href=${video.url} target="_blank">${video.title}</a></li>
-			${video.description ? html`<li>${video.description}</li>` : ''} ${video.channelTitle ? html`<li>${video.channelTitle}</li>` : ''}
-			<li>${video.views}${video.publishedAt ? html`, ${video.publishedAt}` : ''}</li>
+			${video.description ? html`<li>${video.description}</li>` : ''}
+			<li><small>
+      ${video.channelTitle ? html`${video.channelTitle}, ` : ''}
+      ${video.views}${video.publishedAt ? html`, ${video.publishedAt}` : ''}</small></li>
 		</ul>
 	</li>
 `
@@ -77,11 +83,11 @@ function saveResults(event) {
 
 const tableTemplate = (tracks) => html`
   <form @submit=${saveResults}>
-	  <ul>
+	  <ul class="tracks">
       ${tracks.map(
-        (track) => html`<li>
-          <strong>${track.title}</strong>
-          <ul>
+        (track, i) => html`<li>
+          <strong>${i}. ${track.title}</strong>
+          <ul class="results">
             ${track.searchResults.map((video) => searchResultTemplate(track, video))}
           </ul>
         </li>`
