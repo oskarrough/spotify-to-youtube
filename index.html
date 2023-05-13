@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" type="image/svg+xml" href="/vite.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Spotify to YouTube</title>
+		<link rel="stylesheet" href="./src/index.css" />
+		<!-- <script type="module" src="/src/my-element.js"></script> -->
+		<script type="module" src="/src/main.js"></script>
+	</head>
+	<body>
+		<!-- <my-element> -->
+		<!-- 	<h1>Vite + Lit</h1> -->
+		<!-- </my-element> -->
+
+		<h1>Spotify playlist &rarr; list of YouTube videos</h1>
+
+		<p>
+			1. Enter your <a href="https://developer.spotify.com/dashboard/">Spotify API</a> <code>client id</code> and
+			<code>client secret</code>:
+		</p>
+		<form id="spotifyTokenForm">
+			<label for="clientId">Client ID</label>
+			<input type="text" name="clientId" required /><br>
+			<label for="clientSecret">Client Secret</label>
+			<input type="text" name="clientSecret" required /><br>
+			<button type="submit">Get Token</button>
+		</form>
+		
+		<p>2. Enter the Spotify playlist url:</p>
+		<form id="playlistForm">
+			<label for="token">Spotify token</label>
+			<input name="token" readonly required /><br>
+			<label for="url">Playlist URL</label>
+			<input
+				type="text"
+				name="url"
+				value="https://open.spotify.com/playlist/7kqQXkLFuIZFScIuXFaJHe?si=a07c2e4802c54886"
+				required
+			/><br>
+			<button type="submit">Find matches</button>
+		</form>
+
+		
+		<p>3. Select your prefered video match</p>
+		<div id="app"></div>
+
+	</body>
+</html>
