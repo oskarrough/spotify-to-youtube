@@ -15,3 +15,13 @@ body {
 img {
 	max-width: 4rem;
 }
+
+ul ul li {
+  display: flex;
+}
+
+textarea {
+  min-height: 5em;
+  width: 60ch;
+  max-width: 100%;
+}

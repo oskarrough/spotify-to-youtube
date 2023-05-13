@@ -49,3 +49,14 @@ export function parseSpotifyTrack({ track }) {
 		searchResults: [],
 	}
 }
+
+export async function searchYoutube(artist, title, isrcCode, limit) {
+	let query = `${artist} ${title}`
+	if (isrcCode) query += ` ISRC:${isrcCode}`
+	const endpoint = 'https://ytsearch.deno.dev'
+	const response = await fetch(`${endpoint}/?query=${encodeURIComponent(query)}`)
+	const results = await response.json()
+  if (limit) return results.slice(0, limit)
+  return results
+}
+
