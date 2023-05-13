@@ -1,6 +1,6 @@
 :root {
 	font-family: system-ui, sans-serif;
-	line-height: 1.5;
+	line-height: 1.25;
 }
 
 body {
@@ -12,46 +12,45 @@ body {
 	min-height: 100vh;
 }
 
-body > header,
+body > header {
+	margin: 0 auto 1rem;
+	padding: 0 1em;
+}
 body > main {
-	margin: 0 1rem;
+	margin: 0 auto 1rem;
+	padding: 0 1em;
+	max-width: 50rem;
 }
 
 body > footer {
 	margin: auto 1rem 0 auto;
 }
 
-ul ul li {
-	display: flex;
+a {
+	color: blue;
 }
 
-textarea {
-	min-height: 5em;
-	width: 60ch;
-	max-width: 100%;
+spotify-to-youtube ul {
+	padding: 0;
+	list-style: none;
 }
 
 .tracks {
 	display: flex;
 	flex-direction: column;
-	padding: 0;
-	list-style: none;
-	gap: 1em;
+	/* gap: 1em; */
 }
 
 .results {
 	display: flex;
-	flex-direction: row;
-	padding-left: 0rem;
-	list-style: none;
+	flex-direction: column;
+	margin: 1rem 0 1rem 1rem;
 }
 
-.results label {}
 .results > li {
-	margin: 1em 0;
-}
-.results ul {
-	padding-left: 1em;
+	display: flex;
+	gap: 1em;
+	margin-bottom: 1rem;
 }
 
 .results:has(input[type='radio']:checked) li ul {
@@ -59,7 +58,7 @@ textarea {
 }
 
 .results li:has(input[type='radio']:checked) ul {
-	/* outline: 1px solid green; */
+	outline: 1px solid darkgreen;
 	opacity: 1;
 }
 
@@ -67,16 +66,6 @@ textarea {
 	width: 5rem;
 	/* display: none; */
 	vertical-align: top;
-}
-
-a {
-	color: blue;
-}
-
-label {
-	display: inline-block;
-	max-width: 100%;
-	/* min-width: 6.5em; */
 }
 
 input:not([type='radio']) {

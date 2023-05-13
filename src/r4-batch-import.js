@@ -59,7 +59,7 @@ export default class R4BatchImport extends LitElement {
 						${this.matches?.length
 							? html`
 									<p>
-										Ready to import ${this.matches?.length} tracks (the ones above) to your Radio4000 channel:
+										Ready to import the selected ${this.matches?.length} tracks above to your Radio4000 channel:
 										<strong>${this.channel.name}</strong> (@${this.channel.slug})
 									</p>
 									<form @submit=${this.submit}>

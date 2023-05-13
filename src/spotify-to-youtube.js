@@ -16,7 +16,7 @@ export default class SpotifyToYoutube extends LitElement {
 		}
 	}
 
-	maxTracks = 5000
+	maxTracks = 10
 	maxSearchResults = 3
 
 	// Updates this.tracks
@@ -125,10 +125,8 @@ export default class SpotifyToYoutube extends LitElement {
 							)}
 						</ul>
 						<button type="submit">Confirm matches</button><br />
-						<br />
 				  </form>`
 				: ''}
-
 			${this.matches?.length
 				? html`
 						<h2>Import tracks to Radio4000</h2>
