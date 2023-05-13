@@ -16,8 +16,20 @@ export default class SpotifyToYoutube extends LitElement {
 		}
 	}
 
-	maxTracks = 10
+	spotifyToken =
+		'BQCxYimZNVjN3mvbOwgqQy97u49Xg0ArCNMvMKruiHfHrv77OOuSbHaFE4DqDc1YU0e6pR9_mZuvAuDjl7SxYA2XhT11UFJ4lbdqxEaygUi-n4iCxQ8r'
+	maxTracks = 2
 	maxSearchResults = 3
+
+	connectedCallback() {
+		super.connectedCallback()
+
+		// Restore tracks and matches from localstorage, if present
+		const tracks = localStorage.getItem('syr.tracks')
+		if (tracks) this.tracks = JSON.parse(tracks)
+		const matches = localStorage.getItem('syr.matches')
+		if (matches) this.matches = JSON.parse(matches)
+	}
 
 	// Updates this.tracks
 	async findMatches(event) {
@@ -45,14 +57,18 @@ export default class SpotifyToYoutube extends LitElement {
 		try {
 			const playlistId = extractSpotifyPlaylistId(formData.get('url'))
 			const playlist = await getSpotifyPlaylist(playlistId, token)
-			this.tracks = playlist.map((item) => parseSpotifyTrack(item.track)).slice(0, this.maxTracks)
+      if (!playlist) throw new Error('Failed to fetch Spotify playlist')
+			this.tracks = playlist.map((item) => parseSpotifyTrack(item.track))
+
+			if (this.maxTracks) this.tracks = this.tracks.slice(0, this.maxTracks)
 
 			// Search YouTube and render as results come in
 			for (const [i, t] of Object.entries(this.tracks)) {
 				this.tracks[i].searchResults = await searchYoutube(t.artist, t.title, t.isrc, this.maxSearchResults)
 				this.requestUpdate()
 			}
-			console.log('Spotify tracks with YouTube search results', this.tracks)
+			console.log('setting tracks', this.tracks)
+			localStorage.setItem('syr.tracks', JSON.stringify(this.tracks))
 		} catch (error) {
 			console.error('An error occurred:', error)
 		} finally {
@@ -63,7 +79,8 @@ export default class SpotifyToYoutube extends LitElement {
 	// Inserts a newline with the YouTube URL for every matched track
 	saveMatchingVideos(event) {
 		event.preventDefault()
-		const fd = new FormData(event.target)
+
+		const fd = new FormData(event.currentTarget)
 
 		const matches = []
 		for (const [spotifyId, youtubeId] of fd.entries()) {
@@ -73,7 +90,8 @@ export default class SpotifyToYoutube extends LitElement {
 			matches.push(track)
 		}
 		this.matches = matches
-		console.log(this.matches)
+		console.log('setting matches', this.matches)
+		localStorage.setItem('syr.matches', JSON.stringify(this.matches))
 	}
 
 	render() {
@@ -99,10 +117,7 @@ export default class SpotifyToYoutube extends LitElement {
 				<label for="clientSecret">Client secret</label>
 				<input type="text" name="clientSecret" /><br />
 				<label for="token">Spotify token</label>
-				<input
-					name="token"
-					value="BQDqEdX4HJK3N5tcfOPd_gV1f3wc7Bl_7QjWY0jvJ0hkepODJDR6ZWZzMVBqWVGS1Og8vB6v5TcjDILiUq_1jswUjBFb9sknPSZFYEmErrT4CTQlnrWk"
-				/><br />
+				<input name="token" value=${this.spotifyToken} /><br />
 				<button type="submit" ?disabled=${this.loading}>Find matching YouTube videos</button>
 			</form>
 
@@ -112,14 +127,15 @@ export default class SpotifyToYoutube extends LitElement {
 			</p>
 
 			${this.tracks?.length
-				? html` <form @submit=${this.saveMatchingVideos}>
+				? html` <form @input=${this.saveMatchingVideos} @submit=${this.saveMatchingVideos}>
 						<ul class="tracks">
 							${this.tracks?.map(
 								(track, i) => html`<li>
 									<strong>${i}. ${track.artist} - ${track.title}</strong>
 									<a target="_blank" href=${track.url}>link</a>
+
 									<ul class="results">
-										${track.searchResults.map((video) => searchResultTemplate(track, video))}
+										${track.searchResults.map((video) => searchResultTemplate(track, video, this.matches))}
 									</ul>
 								</li>`
 							)}
@@ -142,10 +158,15 @@ export default class SpotifyToYoutube extends LitElement {
 	}
 }
 
-const searchResultTemplate = (track, video) => html`
+const searchResultTemplate = (track, video, matches) => html`
 	<li>
 		<label>
-			<input type="radio" name=${track.id} value=${video.id} />
+			<input
+				type="radio"
+				name=${track.id}
+				value=${video.id}
+				?checked=${matches?.find((x) => x.youtubeId === video.id)}
+			/>
 			<img src=${video.thumbnail} alt=${video.title} />
 		</label>
 		<ul>
