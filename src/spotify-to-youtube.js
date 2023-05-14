@@ -16,7 +16,7 @@ export default class SpotifyToYoutube extends LitElement {
 	}
 
 	// spotifyToken = ''
-	maxTracks = 2
+	// maxTracks = 2
 	maxSearchResults = 3
 
 	connectedCallback() {
@@ -39,7 +39,6 @@ export default class SpotifyToYoutube extends LitElement {
 		try {
 			const playlistId = extractSpotifyPlaylistId(formData.get('url'))
 			const playlist = await getSpotifyPlaylist(playlistId)
-      console.log('playlist', playlist)
       if (!playlist) throw new Error('Failed to fetch Spotify playlist')
 			this.tracks = this.maxTracks ? playlist.tracks.slice(0, this.maxTracks) : playlist.tracks
 			// Search YouTube and render as results come in
@@ -47,7 +46,7 @@ export default class SpotifyToYoutube extends LitElement {
 				this.tracks[i].searchResults = await searchYoutube(t.artist, t.title, this.maxSearchResults)
 				this.requestUpdate()
 			}
-			console.log('setting tracks', this.tracks)
+			console.log('Setting tracks', this.tracks)
 			localStorage.setItem('syr.tracks', JSON.stringify(this.tracks))
 		} catch (error) {
 			console.error('An error occurred:', error)

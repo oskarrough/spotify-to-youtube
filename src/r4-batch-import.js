@@ -25,7 +25,6 @@ export default class R4BatchImport extends LitElement {
 
 	async onSignIn({ detail }) {
 		if (detail.error) throw new Error('Could not sign in')
-		console.log(detail)
 		this.setChannel()
 	}
 
@@ -50,6 +49,7 @@ export default class R4BatchImport extends LitElement {
 			})
 		}
 		this.loading = false
+    alert('all imported')
 	}
 
 	render() {
