@@ -12,5 +12,5 @@ Try it out on https://oskarrough.github.io/spotify-to-youtube/
 The tool is made with web components and uses vite as build system.  
 The `main` branch auto-deploys via GitHub pages.
 
-It reads data from Spotify and YouTube via https://github.com/radio4000/youtube-search  
+It reads data from Spotify and YouTube via https://github.com/radio4000/media-now-deno
 It inserts data into Radio4000 using https://github.com/radio4000/sdk
