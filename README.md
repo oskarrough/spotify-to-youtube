@@ -1,9 +1,11 @@
 # Convert Spotify playlist → YouTube videos → Radio4000 tracks
 
-1. Input a Spotify playlist URL
+1. Input a Spotify playlist URL (limit 500 tracks)
 2. Allow the tool to search for possible matching YouTube videos
 3. Select the matches you want
 4. Import list of YouTube videos into Radio4000 (beta)
+
+Try it out on https://oskarrough.github.io/spotify-to-youtube/
 
 ## Development
 
