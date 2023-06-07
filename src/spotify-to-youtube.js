@@ -55,6 +55,13 @@ export default class SpotifyToYoutube extends LitElement {
 		}
 	}
 
+	confirmMatches(event) {
+		this.saveMatchingVideos(event)
+		event.preventDefault()
+		console.log('confirmMatches')
+		this.confirmedMatches = true
+	}
+
 	// Inserts a newline with the YouTube URL for every matched track
 	saveMatchingVideos(event) {
 		event.preventDefault()
@@ -69,15 +76,9 @@ export default class SpotifyToYoutube extends LitElement {
 			matches.push(track)
 		}
 		this.matches = matches
-		console.log('setting matches', this.matches)
+		console.log('saving tracks & matches', this.matches)
+		localStorage.setItem('syr.tracks', JSON.stringify(this.tracks))
 		localStorage.setItem('syr.matches', JSON.stringify(this.matches))
-	}
-
-	confirmMatches(event) {
-		this.saveMatchingVideos(event)
-		event.preventDefault()
-		console.log('hey')
-		this.confirmedMatches = true
 	}
 
 	clearMatches() {
@@ -87,21 +88,27 @@ export default class SpotifyToYoutube extends LitElement {
 		localStorage.removeItem('syr.matches')
 	}
 
+  skipTrack(event, track) {
+    event.preventDefault()
+    this.tracks = this.tracks.filter(t => t.id !== track.id)
+		localStorage.setItem('syr.tracks', JSON.stringify(this.tracks))
+  }
+
 	render() {
 		const i = 0
 		return html`
 			<details ?open=${!this.tracks?.length}>
 				<summary>Step 1. Import Spotify playlist</summary>
-			<form @submit=${this.findMatches}>
-				<label for="url">URL</label>
-				<input
-					type="text"
-					name="url"
-					value="https://open.spotify.com/playlist/7kqQXkLFuIZFScIuXFaJHe?si=a07c2e4802c54886"
-					required
-				/><br />
-				<button type="submit" ?disabled=${this.loading}>Find matching YouTube videos</button>
-			</form>
+        <form @submit=${this.findMatches}>
+          <label for="url">URL</label>
+          <input
+            type="text"
+            name="url"
+            value="https://open.spotify.com/playlist/7kqQXkLFuIZFScIuXFaJHe?si=a07c2e4802c54886"
+            required
+          /><br />
+          <button type="submit" ?disabled=${this.loading}>Find matching YouTube videos</button>
+        </form>
 			</details>
 
 			<p ?hidden=${!this.loading}>
@@ -111,16 +118,17 @@ export default class SpotifyToYoutube extends LitElement {
 
 			<details ?open=${this.tracks?.length && !this.confirmedMatches}>
 				<summary>Step 2. Choose your videos</summary>
-			${this.tracks?.length
-				? html` <form @input=${this.saveMatchingVideos} @submit=${this.confirmMatches}>
+			  ${this.tracks?.length ? html`
+          <form @input=${this.saveMatchingVideos} @submit=${this.confirmMatches}>
 						<ul class="tracks">
 							${this.tracks?.map(
 								(track, i) => html`<li>
 									<strong>${i}. ${track.artist} - ${track.title}</strong>
 									<a target="_blank" href=${track.url}>link</a>
+                  <button @click=${(event) => this.skipTrack(event, track)}>skip</button>
 
 									<ul class="results">
-										${track.searchResults.map((video) => searchResultTemplate(track, video, this.matches))}
+										${track.searchResults.map((video, i) => searchResultTemplate(track, i, video, this.matches))}
 									</ul>
 								</li>`
 							)}
@@ -144,16 +152,16 @@ export default class SpotifyToYoutube extends LitElement {
 	}
 }
 
-const searchResultTemplate = (track, video, matches) => html`
+const searchResultTemplate = (track, index, video, matches) => html`
 	<li>
 		<label>
 			<input
 				type="radio"
 				name=${track.id}
 				value=${video.id}
-				?checked=${matches?.find((x) => x.youtubeId === video.id)}
+				?checked=${matches?.find((x) => x.youtubeId === video.id) || index === 0}
 			/>
-			<img src=${video.thumbnail} alt=${video.title} />
+			<img src=${video.thumbnail} alt=${video.title} /> 
 		</label>
 		<ul>
 			<li><a href=${`https://www.youtube.com/watch?v=` + video.id} target="_blank">${video.title}</a></li>
