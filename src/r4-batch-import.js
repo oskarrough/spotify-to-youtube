@@ -14,6 +14,7 @@ export default class R4BatchImport extends LitElement {
 		return {
 			matches: { type: Array },
 			channel: { type: Object, state: true },
+      loading: { type: Boolean, reflect: true}
 		}
 	}
 
@@ -41,7 +42,6 @@ export default class R4BatchImport extends LitElement {
 	async submit(event) {
 		this.loading = true
 		event.preventDefault()
-		console.log('import', this.matches)
 		for (const x of this.matches) {
 			await sdk.tracks.createTrack(this.channel.id, {
 				url: x.url,
@@ -49,7 +49,7 @@ export default class R4BatchImport extends LitElement {
 			})
 		}
 		this.loading = false
-    alert('all imported')
+    alert('Success! All tracks were imported')
 	}
 
 	render() {
@@ -63,7 +63,9 @@ export default class R4BatchImport extends LitElement {
 										<strong>${this.channel.name}</strong> (@${this.channel.slug})
 									</p>
 									<form @submit=${this.submit}>
-										<button type="submit" ?disabled=${this.loading}>Import</button>
+										<button type="submit" ?disabled=${this.loading}>
+                      ${this.loading ? 'Importing...' : 'Import'}
+                    </button>
 									</form>
 									<br />
 							  `
