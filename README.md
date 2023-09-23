@@ -14,3 +14,5 @@ The `main` branch auto-deploys via GitHub pages.
 
 It reads data from Spotify and YouTube via https://github.com/radio4000/media-now-deno
 It inserts data into Radio4000 using https://github.com/radio4000/sdk
+
+It uses the API from https://github.com/radio4000/media-now-deno.
