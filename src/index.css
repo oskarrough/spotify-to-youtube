@@ -12,10 +12,7 @@ body {
 	min-height: 100vh;
 }
 
-body > header {
-	margin: 0 auto 1rem;
-	padding: 0 1em;
-}
+body > header,
 body > main {
 	margin: 0 auto 1rem;
 	padding: 0 1em;

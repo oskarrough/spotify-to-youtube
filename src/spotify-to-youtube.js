@@ -12,6 +12,8 @@ export default class SpotifyToYoutube extends LitElement {
 			matches: { type: Array, state: true },
 			loading: { type: Boolean, state: true },
 			confirmedMatches: { type: Boolean, state: true },
+			error: {type: String},
+			i: {type: Number}
 		}
 	}
 
@@ -31,7 +33,7 @@ export default class SpotifyToYoutube extends LitElement {
 	// Updates this.tracks
 	async findMatches(event) {
 		event.preventDefault()
-		this.isLoading = true
+		this.loading = true
 		const $form = event.target
 		const formData = new FormData($form)
 
@@ -43,13 +45,16 @@ export default class SpotifyToYoutube extends LitElement {
 			this.tracks = this.maxTracks ? playlist.tracks.slice(0, this.maxTracks) : playlist.tracks
 			// Search YouTube and render as results come in
 			for (const [i, t] of Object.entries(this.tracks)) {
-				this.tracks[i].searchResults = await searchYoutube(t.artist, t.title, this.maxSearchResults)
-				this.requestUpdate()
+				console.log(i)
+				this.tracks[i].searchResults = await searchYoutube(`${t.artist} ${t.title}`, this.maxSearchResults)
+				this.i = i
+				// this.requestUpdate()
 			}
 			console.log('Setting tracks', this.tracks)
 			localStorage.setItem('syr.tracks', JSON.stringify(this.tracks))
 		} catch (error) {
 			console.error('An error occurred:', error)
+			this.error = error.message
 		} finally {
 			this.loading = false
 		}
@@ -65,9 +70,7 @@ export default class SpotifyToYoutube extends LitElement {
 	// Inserts a newline with the YouTube URL for every matched track
 	saveMatchingVideos(event) {
 		event.preventDefault()
-
 		const fd = new FormData(event.currentTarget)
-
 		const matches = []
 		for (const [spotifyId, youtubeId] of fd.entries()) {
 			const spotifyTrack = this.tracks.find((t) => t.id === spotifyId)
@@ -95,7 +98,6 @@ export default class SpotifyToYoutube extends LitElement {
   }
 
 	render() {
-		const i = 0
 		return html`
 			<details ?open=${!this.tracks?.length}>
 				<summary>Step 1. Import Spotify playlist</summary>
@@ -104,16 +106,21 @@ export default class SpotifyToYoutube extends LitElement {
           <input
             type="text"
             name="url"
-            value="https://open.spotify.com/playlist/7kqQXkLFuIZFScIuXFaJHe?si=a07c2e4802c54886"
+            value="https://open.spotify.com/playlist/7kqQXkLFuIZFScIuXFaJHe"
+						valuePrivatePlaylist="https://open.spotify.com/playlist/44l2AC9bKrAnMTSz7eIe7H"
             required
           /><br />
           <button type="submit" ?disabled=${this.loading}>Find matching YouTube videos</button>
         </form>
+				${this.error ? html`
+					<p>Error! Could not fetch this playlist. Is it public?<br/>
+						<code>${this.error}</code></p>
+				` : null}
 			</details>
 
 			<p ?hidden=${!this.loading}>
+				Matching ${this.i}/${this.tracks?.length}...
 				<rough-spinner spinner="1" fps="30"></rough-spinner><br />
-				Matching ${i}/${this.tracks?.length}...
 			</p>
 
 			<details ?open=${this.tracks?.length && !this.confirmedMatches}>
