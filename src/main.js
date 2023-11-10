@@ -1,4 +1,4 @@
-import 'https://cdn.jsdelivr.net/npm/@radio4000/components/dist/index.min.js'
+import 'https://cdn.jsdelivr.net/npm/@radio4000/components/dist/r4.js'
 import 'https://cdn.jsdelivr.net/gh/oskarrough/rough-spinner/rough-spinner.js'
 
 import SpotifyToYoutube from './spotify-to-youtube.js'
