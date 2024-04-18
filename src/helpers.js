@@ -11,7 +11,7 @@ export function getSpotifyPlaylist(id) {
 	const url = `https://medianow.deno.dev/spotify/playlists/${id}`
 	return fetch(url)
 		.then((response) => response.json())
-    .then(parseSpotifyPlaylistReponse)
+		.then(parseSpotifyPlaylistReponse)
 		.catch((error) => {
 			console.log(error)
 			throw new Error('Failed to fetch Spotify playlist.')
@@ -19,19 +19,19 @@ export function getSpotifyPlaylist(id) {
 }
 
 function parseSpotifyPlaylistReponse(res) {
-  console.log(res.data.playlistV2)
-  return {
-    name: res.data.playlistV2.name,
-    owner: res.data.playlistV2.ownerV2.data.username,
-    tracks: res.data.playlistV2.content.items.map(parseSpotifyTrack)
-  }
+	console.log('Fetched Spotify API', res.data.playlistV2)
+	return {
+		name: res.data.playlistV2.name,
+		owner: res.data.playlistV2.ownerV2.data.username,
+		tracks: res.data.playlistV2.content.items.map(parseSpotifyTrack)
+	}
 }
 
 // Take what we need from the response.
 export function parseSpotifyTrack(track) {
 	return {
 		id: track.uid,
-    url: `https://open.spotify.com/track/${track.uid}`,
+		url: `https://open.spotify.com/track/${track.uid}`,
 		artist: track.item.data.artists.items[0].profile.name,
 		title: track.item.data.name,
 		image: track.item.data.albumOfTrack.coverArt.sources[0].url,

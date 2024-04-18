@@ -10,6 +10,7 @@ body {
 	/* place-items: center; */
 	min-width: 320px;
 	min-height: 100vh;
+	scroll-behavior: smooth;
 }
 
 body > header,
@@ -48,16 +49,20 @@ spotify-to-youtube ul {
 .results > li {
 	display: flex;
 	gap: 1em;
-	margin-bottom: 1rem;
+	margin-bottom: 1px;
 }
 
 .results:has(input[type='radio']:checked) li ul {
 	opacity: 0.25;
 }
 
+.results li ul {
+	padding: 0.2em;
+}
 .results li:has(input[type='radio']:checked) ul {
 	outline: 1px solid darkgreen;
 	opacity: 1;
+	border-radius: 0.3em;
 }
 
 .results img {
