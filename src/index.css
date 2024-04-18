@@ -3,25 +3,28 @@
 	line-height: 1.25;
 }
 
+html,
+body {
+	scroll-behavior: smooth;
+}
+
 body {
 	margin: 0;
 	display: flex;
 	flex-direction: column;
-	/* place-items: center; */
 	min-width: 320px;
 	min-height: 100vh;
-	scroll-behavior: smooth;
 }
 
-body > header,
-body > main {
+body>header,
+body>main {
 	margin: 0 auto 1rem;
 	padding: 0 1em;
 	width: 100%;
 	max-width: 50rem;
 }
 
-body > footer {
+body>footer {
 	margin: auto 1rem 0 auto;
 }
 
@@ -46,7 +49,7 @@ spotify-to-youtube ul {
 	margin: 1rem 0 1rem 1rem;
 }
 
-.results > li {
+.results>li {
 	display: flex;
 	gap: 1em;
 	margin-bottom: 1px;
@@ -59,6 +62,7 @@ spotify-to-youtube ul {
 .results li ul {
 	padding: 0.2em;
 }
+
 .results li:has(input[type='radio']:checked) ul {
 	outline: 1px solid darkgreen;
 	opacity: 1;
@@ -79,5 +83,21 @@ input:not([type='radio']) {
 }
 
 details {
-	margin-bottom: 2rem;
+	margin-bottom: 1rem;
 }
+
+textarea {
+	min-width: 40em;
+}
+
+section summary {
+	user-select: none;
+	min-height: 2em;
+	line-height: 2;
+	padding-left: 0.5em;
+	margin-bottom: 1em;
+}
+section[spotify] summary { background: #1abd55; color: white; }
+section[youtube] summary { background: #f00; color: white; }
+section[matches] summary { background: #eee;  }
+section[r4] summary { background: #5e1ae6; color: white; }

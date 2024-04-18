@@ -99,25 +99,27 @@ export default class SpotifyToYoutube extends LitElement {
 
 	render() {
 		return html`
+			${this.tracks?.length ? html`
+				<p><button @click=${this.clearMatches}>Start over</button></p>` : null}
+			<section spotify>
 			<details ?open=${!this.tracks?.length}>
 				<summary>Step 1. Import Spotify playlist</summary>
 				<form @submit=${this.findMatches}>
-					<label for="url">URL</label>
-					<input type="text" name="url" value="https://open.spotify.com/playlist/44l2AC9bKrAnMTSz7eIe7H" required /><br />
-					<button type="submit" ?disabled=${this.loading}>Find matching YouTube videos</button>
+					<label for="url">A public Spotify playlist URL</label>
+					<input type="text" name="url" id="url" value="https://open.spotify.com/playlist/44l2AC9bKrAnMTSz7eIe7H" required /><br />
+					<button type="submit" ?disabled=${this.loading}>Import</button>
 				</form>
 				${this.error ? html`
 					<p>Error! Could not fetch this playlist. Is it public?<br/><code>${this.error}</code></p> ` : null}
-				${this.tracks?.length ? html`
-					<p><button @click=${this.clearMatches}>Clear everything</button></p>` : null}
+				<p ?hidden=${!this.loading}>
+					Matching ${Number(this.i || 0) + 1}/${this.tracks?.length}...
+					<rough-spinner spinner="1" fps="30"></rough-spinner><br />
+				</p>
 			</details>
 
+			</section>
 
-			<p ?hidden=${!this.loading}>
-				Matching ${this.i}/${this.tracks?.length}...
-				<rough-spinner spinner="1" fps="30"></rough-spinner><br />
-			</p>
-
+			<section youtube>
 			<details ?open=${this.tracks?.length && !this.confirmedMatches}>
 				<summary>Step 2. Confirm your tracks</summary>
 				<p>For each track decide which matching YouTube video to keep, or skip.</p>
@@ -135,16 +137,42 @@ export default class SpotifyToYoutube extends LitElement {
 								</li>
 							`)}
 						</ul>
-						<button type="submit">Confirm matches</button><br />
-						<button @click=${this.clearMatches}>Clear all</button><br />
+						<p>
+						<button type="submit">Confirm matches</button> or <button @click=${this.clearMatches}>Start over</button>
+						</p>
 					</form>`
 					: ''}
 			</details>
+			</section>
 
+			<section matches>
+			<details ?open=${this.confirmed && this.matches?.length}>
+				<summary>Matches</summary>
+				<p>Here are the tracks you selected. Do with it as you please.</p>
+				<ul>
+				${this.matches?.map((match, i) => html`
+					<li>
+						<strong>${i}. ${match.title}</strong>
+					</li>
+				`)}
+				</ul>
+				<p>Copy paste as CSV</p>
+				<textarea rows=${this.matches?.length}>title;spotify;youtube
+${this.matches?.map(m => `${m.title.replace(';', '')};${m.spotifyId};${m.youtubeId}\n`)}</textarea>
+				<p>Copy paste the YouTube IDs</p>
+				<textarea rows=${this.matches?.length}>${this.matches?.map(m => m.youtubeId + '\n')}</textarea>
+				<p>Copy paste the YouTube URLs</p>
+				<textarea rows=${this.matches?.length}>${this.matches?.map(m => 'https://www.youtube.com/watch?v=' + m.youtubeId + '\n')}</textarea>
+			</details>
+			</section>
+
+			<section r4>
 			<details ?open=${this.matches?.length}>
-				<summary>Step 3. Import tracks to Radio4000</summary>
+				<summary>Optional step 3. Import tracks to Radio4000 beta</summary>
+				<p><small>Note, already imported tracks will be duplicated.</small></p>
 				<r4-batch-import .matches=${this.matches}></r4-batch-import>
 			</details>
+			</section>
 		`
 	}
 
