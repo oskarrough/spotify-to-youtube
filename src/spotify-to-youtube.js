@@ -120,7 +120,7 @@ export default class SpotifyToYoutube extends LitElement {
 
 			<section youtube>
 			<details ?open=${this.tracks?.length && !this.confirmedMatches}>
-				<summary>Step 2. Confirm your tracks</summary>
+				<summary>Step 2. Confirm your YouTube tracks</summary>
 				<p>For each track decide which matching YouTube video to keep, or skip.</p>
 				${this.tracks?.length ? html`
 					<form id="tracksform" @input=${this.saveMatchingVideos} @submit=${this.confirmMatches}>
