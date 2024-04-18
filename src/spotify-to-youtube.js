@@ -61,16 +61,15 @@ export default class SpotifyToYoutube extends LitElement {
 	}
 
 	confirmMatches(event) {
-		this.saveMatchingVideos(event)
 		event.preventDefault()
-		console.log('confirmMatches')
+		this.saveMatchingVideos()
 		this.confirmedMatches = true
+		console.log('confirmed matches')
 	}
 
 	// Inserts a newline with the YouTube URL for every matched track
-	saveMatchingVideos(event) {
-		event.preventDefault()
-		const fd = new FormData(event.currentTarget)
+	saveMatchingVideos() {
+		const fd = new FormData(document.querySelector('form#tracksform'))
 		const matches = []
 		for (const [spotifyId, youtubeId] of fd.entries()) {
 			const spotifyTrack = this.tracks.find((t) => t.id === spotifyId)
@@ -124,7 +123,7 @@ export default class SpotifyToYoutube extends LitElement {
 				<summary>Step 2. Confirm your tracks</summary>
 				<p>For each track decide which matching YouTube video to keep, or skip.</p>
 				${this.tracks?.length ? html`
-					<form @input=${this.saveMatchingVideos} @submit=${this.confirmMatches}>
+					<form id="tracksform" @input=${this.saveMatchingVideos} @submit=${this.confirmMatches}>
 						<ul class="tracks">
 							${this.tracks?.map((track, i) => html`
 								<li>
@@ -138,17 +137,23 @@ export default class SpotifyToYoutube extends LitElement {
 							`)}
 						</ul>
 						<p>
-						<button type="submit">Confirm matches</button> or <button @click=${this.clearMatches}>Start over</button>
+							<button type="submit">Confirm matches</button> or <button @click=${this.clearMatches}>Start over</button>
 						</p>
 					</form>`
 					: ''}
 			</details>
 			</section>
 
+
 			<section matches>
-			<details ?open=${this.confirmed && this.matches?.length}>
-				<summary>Matches</summary>
-				<p>Here are the tracks you selected. Do with it as you please.</p>
+			<details>
+				<summary>3. Step 3</summary>
+				<p>There is no step 3.</p>
+			</details>
+
+			<details ?open=${this.confirmedMatches && this.matches?.length}>
+				<summary>Results</summary>
+				<p>Here are the tracks you chose. Do with it as you please.</p>
 				<ul>
 				${this.matches?.map((match, i) => html`
 					<li>
@@ -168,7 +173,7 @@ ${this.matches?.map(m => `${m.title.replace(';', '')};${m.spotifyId};${m.youtube
 
 			<section r4>
 			<details ?open=${this.matches?.length}>
-				<summary>Optional step 3. Import tracks to Radio4000 beta</summary>
+				<summary>Optional step 4. Import tracks to Radio4000 beta</summary>
 				<p><small>Note, already imported tracks will be duplicated.</small></p>
 				<r4-batch-import .matches=${this.matches}></r4-batch-import>
 			</details>
