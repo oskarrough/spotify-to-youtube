@@ -168,6 +168,8 @@ ${this.matches?.map(m => `${m.title.replace(';', '')};${m.spotifyId};${m.youtube
 				<textarea rows=${this.matches?.length}>${this.matches?.map(m => m.youtubeId + '\n')}</textarea>
 				<p>Copy paste the YouTube URLs</p>
 				<textarea rows=${this.matches?.length}>${this.matches?.map(m => 'https://www.youtube.com/watch?v=' + m.youtubeId + '\n')}</textarea>
+				<p>Copy paste to <a href="https://ugrp.gitlab.io/protos/r4-text">r4-text</a></p>
+				<textarea rows=${this.matches?.length}>${this.matches?.map(m => m.title+'\n'+'https://www.youtube.com/watch?v=' + m.youtubeId + '\n\n')}</textarea>
 			</details>
 			</section>
 
