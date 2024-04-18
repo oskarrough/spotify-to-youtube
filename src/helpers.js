@@ -39,11 +39,14 @@ export function parseSpotifyTrack(track) {
 	}
 }
 
-export async function searchYoutube(artist, title, limit) {
-	const query = `${artist} ${title}`
+/**
+ * @arg {string} query
+ * @arg {number} [limit]
+ */
+export async function searchYoutube(query, limit) {
 	const response = await fetch(`https://medianow.deno.dev/youtube/search?query=${encodeURIComponent(query)}`)
 	const results = await response.json()
-  if (limit) return results.slice(0, limit)
-  return results
+	if (limit) return results.slice(0, limit)
+	return results
 }
 

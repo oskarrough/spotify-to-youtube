@@ -14,13 +14,13 @@ export default class R4BatchImport extends LitElement {
 		return {
 			matches: { type: Array },
 			channel: { type: Object, state: true },
-      loading: { type: Boolean, reflect: true}
+			loading: { type: Boolean, reflect: true}
 		}
 	}
 
 	async connectedCallback() {
 		super.connectedCallback()
-		const user = await sdk.users.readUser()
+		const {data: user} = await sdk.users.readUser()
 		if (user) this.setChannel()
 	}
 

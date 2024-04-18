@@ -19,7 +19,7 @@ export default class SpotifyToYoutube extends LitElement {
 
 	// spotifyToken = ''
 	// maxTracks = 2
-	maxSearchResults = 3
+	maxSearchResults = 4
 
 	connectedCallback() {
 		super.connectedCallback()
@@ -91,11 +91,11 @@ export default class SpotifyToYoutube extends LitElement {
 		localStorage.removeItem('syr.matches')
 	}
 
-  skipTrack(event, track) {
-    event.preventDefault()
-    this.tracks = this.tracks.filter(t => t.id !== track.id)
+	skipTrack(event, track) {
+		event.preventDefault()
+		this.tracks = this.tracks.filter(t => t.id !== track.id)
 		localStorage.setItem('syr.tracks', JSON.stringify(this.tracks))
-  }
+	}
 
 	render() {
 		return html`
