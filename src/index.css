@@ -3,6 +3,12 @@
 	line-height: 1.25;
 }
 
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
 html,
 body {
 	scroll-behavior: smooth;
@@ -17,15 +23,14 @@ body {
 	overflow-y: scroll;
 }
 
-body>header,
-body>main {
+body > header,
+body > main {
 	margin: 0 auto 1rem;
 	padding: 0 1em;
 	width: 100%;
 	max-width: 50rem;
 }
-
-body>footer {
+body > footer {
 	margin: auto 1rem 0 auto;
 }
 
@@ -50,7 +55,7 @@ spotify-to-youtube ul {
 	margin: 1rem 0 1rem 1rem;
 }
 
-.results>li {
+.results > li {
 	display: flex;
 	gap: 1em;
 	margin-bottom: 1px;
@@ -98,7 +103,18 @@ section summary {
 	padding-left: 0.5em;
 	margin-bottom: 1em;
 }
-section[spotify] summary { background: #1abd55; color: white; }
-section[youtube] summary { background: #f00; color: white; }
-section[matches] summary { background: #eee;  }
-section[r4] summary { background: #5e1ae6; color: white; }
+section[spotify] summary {
+	background: #1abd55;
+	color: white;
+}
+section[youtube] summary {
+	background: #f00;
+	color: white;
+}
+section[matches] summary {
+	background: #eee;
+}
+section[r4] summary {
+	background: #5e1ae6;
+	color: white;
+}
