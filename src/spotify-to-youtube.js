@@ -44,12 +44,19 @@ export default class SpotifyToYoutube extends LitElement {
       if (!playlist) throw new Error('Failed to fetch Spotify playlist')
 			this.tracks = this.maxTracks ? playlist.tracks.slice(0, this.maxTracks) : playlist.tracks
 			// Search YouTube and render as results come in
-			for (const [i, t] of Object.entries(this.tracks)) {
-				console.log(i)
-				this.tracks[i].searchResults = await searchYoutube(`${t.artist} ${t.title}`, this.maxSearchResults)
-				this.i = i
-				// this.requestUpdate()
-			}
+			await Promise.allSettled(
+				this.tracks.map((t, i) =>
+					searchYoutube(`${t.artist} ${t.title}`, this.maxSearchResults)
+						.then((results) => {
+							this.i = i
+							this.tracks[i].searchResults = results
+						})
+						.catch((error) => {
+							console.error('An error occurred:', error)
+							this.error = error.message
+						})
+				)
+			)
 			console.log('Setting tracks', this.tracks)
 			localStorage.setItem('syr.tracks', JSON.stringify(this.tracks))
 		} catch (error) {
