@@ -110,11 +110,17 @@ export default class SpotifyToYoutube extends LitElement {
 			<section spotify>
 			<details ?open=${!this.tracks?.length}>
 				<summary>Step 1. Import Spotify playlist</summary>
-				<form @submit=${this.findMatches}>
-					<label for="url">A public Spotify playlist URL</label>
-					<input type="text" name="url" id="url" value="https://open.spotify.com/playlist/44l2AC9bKrAnMTSz7eIe7H" required /><br />
-					<button type="submit" ?disabled=${this.loading}>Import</button>
-				</form>
+        <form @submit=${this.findMatches}>
+          <label for="url">URL</label>
+          <input
+            type="text"
+            name="url"
+            value="https://open.spotify.com/playlist/7kqQXkLFuIZFScIuXFaJHe"
+						valuePrivatePlaylist="https://open.spotify.com/playlist/44l2AC9bKrAnMTSz7eIe7H"
+            required
+          /><br />
+          <button type="submit" ?disabled=${this.loading}>Find matching YouTube videos</button>
+        </form>
 				${this.error ? html`
 					<p>Error! Could not fetch this playlist. Is it public?<br/><code>${this.error}</code></p> ` : null}
 				<p ?hidden=${!this.loading}>
@@ -211,7 +217,7 @@ const searchResultTemplate = (track, index, video, matches) => html`
 				?checked=${matches?.find((x) => x.youtubeId === video.id) || index === 0}
 				@input=${selectedVideo}
 			/>
-			<img src=${video.thumbnail} alt=${video.title} /> 
+			<img src=${video.thumbnail} alt=${video.title} />
 		</label>
 		<ul>
 			<li><a href=${`https://www.youtube.com/watch?v=` + video.id} target="_blank">${video.title}</a></li>
