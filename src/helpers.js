@@ -5,30 +5,29 @@ export function extractSpotifyPlaylistId(url) {
 	return match ? match[1] : null
 }
 
-// Fetch and parse Spotify playlist tracks
+/**
+ * Fetches a Spotify playlist from the MediaNow API
+ * @param {string} id - Spotify playlist ID
+ */
 export async function getSpotifyPlaylist(id) {
 	const url = `https://medianow.deno.dev/spotify/playlists/${id}`
 	try {
 		const response = await fetch(url)
 		const res = await response.json()
-		return parseSpotifyPlaylistReponse(res)
+		if (res.data.playlistV2.__typename === 'NotFound') throw new Error(res.data.playlistV2.message)
+		return {
+			name: res.data.playlistV2.name,
+			owner: res.data.playlistV2.ownerV2.data.username,
+			tracks: res.data.playlistV2.content.items.map(parseSpotifyTrack),
+		}
 	} catch (error) {
 		throw new Error(error.message)
 	}
 }
 
-// Take what we need from the Spotify API playlist response.
-function parseSpotifyPlaylistReponse(res) {
-	if (res.data.playlistV2.__typename === 'NotFound') throw new Error(res.data.playlistV2.message)
-	console.log('parseSpotifyPlaylistResponse', res.data)
-	return {
-		name: res.data.playlistV2.name,
-		owner: res.data.playlistV2.ownerV2.data.username,
-		tracks: res.data.playlistV2.content.items.map(parseSpotifyTrack),
-	}
-}
-
-// Take what we need from the Spotify API track response.
+/**
+ * Convert default Spotify API track to our own "track" so we know what we have.
+ */
 export function parseSpotifyTrack(track) {
 	return {
 		id: track.uid,

@@ -13,9 +13,9 @@ export default class SpotifyToYoutube extends LitElement {
 		}
 	}
 
-	// spotifyToken = ''
-	// maxTracks = 2
-	maxSearchResults = 4
+	/** How many YouTube search results to display for each track */
+	maxSearchResults = 3
+	// maxTracks = 2 // for debugging
 
 	connectedCallback() {
 		super.connectedCallback()
@@ -35,7 +35,7 @@ export default class SpotifyToYoutube extends LitElement {
 
 		// Query the playlist
 		try {
-			const playlistId = extractSpotifyPlaylistId(formData.get('url'))
+			const playlistId = extractSpotifyPlaylistId(formData.get('spotifyPlaylistUrl'))
 			const playlist = await getSpotifyPlaylist(playlistId)
 			if (!playlist) throw new Error('Failed to fetch Spotify playlist')
 			this.tracks = this.maxTracks ? playlist.tracks.slice(0, this.maxTracks) : playlist.tracks
@@ -77,7 +77,12 @@ export default class SpotifyToYoutube extends LitElement {
 		for (const [spotifyId, youtubeId] of fd.entries()) {
 			const spotifyTrack = this.tracks.find((t) => t.id === spotifyId)
 			const title = spotifyTrack.artist + ' - ' + spotifyTrack.title
-			const track = {spotifyId, youtubeId, title, url: 'https://www.youtube.com/watch?v=' + youtubeId}
+			const track = {
+				spotifyId,
+				youtubeId,
+				title,
+				url: 'https://www.youtube.com/watch?v=' + youtubeId,
+			}
 			matches.push(track)
 		}
 		this.matches = matches
@@ -106,10 +111,11 @@ export default class SpotifyToYoutube extends LitElement {
 				<details ?open=${!this.tracks?.length}>
 					<summary>Step 1. Import Spotify playlist</summary>
 					<form @submit=${this.findMatches}>
-						<label for="url">URL</label>
+						<label for="spotifyPlaylistUrl">URL</label>
 						<input
 							type="text"
-							name="url"
+							name="spotifyPlaylistUrl"
+							id="spotifyPlaylistUrl"
 							value="https://open.spotify.com/playlist/7kqQXkLFuIZFScIuXFaJHe"
 							valuePrivatePlaylist="https://open.spotify.com/playlist/44l2AC9bKrAnMTSz7eIe7H"
 							required
@@ -128,17 +134,18 @@ export default class SpotifyToYoutube extends LitElement {
 
 			<section youtube>
 				<details ?open=${this.tracks?.length && !this.confirmedMatches}>
-					<summary>Step 2. Confirm your YouTube tracks</summary>
-					<p>For each track decide which matching YouTube video to keep, or skip.</p>
+					<summary>Step 2. Select your YouTube videos</summary>
 					${this.tracks?.length
 						? html` <form id="tracksform" @input=${this.saveMatchingVideos} @submit=${this.confirmMatches}>
+								<p>Match each track with a video, or skip.</p>
 								<ul class="tracks">
 									${this.tracks?.map(
 										(track, i) => html`
 											<li>
-												<button @click=${(event) => this.skipTrack(event, track)}>Skip</button>
-												<strong>${i}. ${track.artist} - ${track.title}</strong>
-												<a target="_blank" href=${track.url}>link</a>
+												<p>
+													<strong>${i + 1}. ${track.artist} - ${track.title}</strong>
+													<button @click=${(event) => this.skipTrack(event, track)}>Remove</button>
+												</p>
 												<ul class="results">
 													${track.searchResults.map((video, i) => searchResultTemplate(track, i, video, this.matches))}
 												</ul>
@@ -151,19 +158,21 @@ export default class SpotifyToYoutube extends LitElement {
 									<button @click=${this.clearMatches}>Start over</button>
 								</p>
 							</form>`
-						: ''}
+						: 'Waiting for tracks…'}
 				</details>
 			</section>
 
 			<section matches>
 				<details>
-					<summary>3. Step 3</summary>
+					<summary>Step 3</summary>
 					<p>There is no step 3.</p>
 				</details>
 
 				<details ?open=${this.confirmedMatches && this.matches?.length}>
-					<summary>Results</summary>
-					<p>Here are the tracks you chose. Do with it as you please.</p>
+					<summary>Step 4. Results</summary>
+
+					<p>${this.matches?.length ? html`Here are your tracks. Do with it as you please.` : html`No matches yet.`}</p>
+
 					<ul>
 						${this.matches?.map(
 							(match, i) => html`
@@ -173,14 +182,14 @@ export default class SpotifyToYoutube extends LitElement {
 							`,
 						)}
 					</ul>
-					<p>Copy paste as CSV</p>
+					<p>CSV</p>
 					<textarea rows=${this.matches?.length}>
 title;spotify;youtube
 ${this.matches?.map((m) => `${m.title.replace(';', '')};${m.spotifyId};${m.youtubeId}\n`)}</textarea
 					>
-					<p>Copy paste the YouTube IDs</p>
+					<p>YouTube IDs</p>
 					<textarea rows=${this.matches?.length}>${this.matches?.map((m) => m.youtubeId + '\n')}</textarea>
-					<p>Copy paste the YouTube URLs</p>
+					<p>YouTube URLs</p>
 					<textarea rows=${this.matches?.length}>
 ${this.matches?.map((m) => 'https://www.youtube.com/watch?v=' + m.youtubeId + '\n')}</textarea
 					>
@@ -194,7 +203,9 @@ ${this.matches?.map((m) => m.title + '\n' + 'https://www.youtube.com/watch?v=' +
 			<section r4>
 				<details ?open=${this.matches?.length}>
 					<summary>Optional step 4. Import tracks to Radio4000 beta</summary>
-					<p><small>Note, already imported tracks will be duplicated.</small></p>
+					<p>
+						<small>Note, already imported tracks will be duplicated.</small>
+					</p>
 					<r4-batch-import .matches=${this.matches}></r4-batch-import>
 				</details>
 			</section>
@@ -225,7 +236,9 @@ const searchResultTemplate = (track, index, video, matches) => html`
 			<img src=${video.thumbnail} alt=${video.title} />
 		</label>
 		<ul>
-			<li><a href=${`https://www.youtube.com/watch?v=` + video.id} target="_blank">${video.title}</a></li>
+			<li>
+				<a href=${`https://www.youtube.com/watch?v=` + video.id} target="_blank">${video.title}</a>
+			</li>
 			${video.description ? html`<li>${video.description}</li>` : ''}
 			<li>
 				<small>

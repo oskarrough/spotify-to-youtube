@@ -17,10 +17,10 @@
     "vite": "^5.3.2"
   },
   "prettier": {
-    "bracketspacing": false,
-    "printwidth": 120,
-    "singlequote": true,
-    "usetabs": true,
+    "bracketSpacing": false,
+    "printWidth": 120,
+    "singleQuote": true,
+    "useTabs": true,
     "semi": false
   }
 }
