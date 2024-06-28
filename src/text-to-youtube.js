@@ -89,16 +89,16 @@ export default class TextToYoutube extends LitElement {
 		return html`
 			<section>
 				<details open>
-					<summary>Step 1. Write the tracks you want</summary>
+					<summary>Step 1. Enter your playlist as text</summary>
 					<form @submit=${this.findMatches}>
-						<label for="text_playlist">Text playlist</label><br />
-						<textarea name="text_playlist" id="text_playlist" rows="20" required>
+						<label for="text_playlist">One track per line</label><br />
+						<textarea name="text_playlist" id="text_playlist" required>
 joy orbison in drink
 tierra hungry hippo
 burger ink elvism
 </textarea
 						><br />
-						<button type="submit" ?disabled=${this.loading}>Import</button>
+						<button type="submit" ?disabled=${this.loading}>Search YouTube for matching videos</button>
 					</form>
 					${this.error
 						? html` <p>Error! Could not fetch this playlist. Is it public?<br /><code>${this.error}</code></p> `
@@ -120,9 +120,8 @@ burger ink elvism
 									${this.inputLines?.map(
 										(track, i) => html`
 											<li>
+												<strong>${i + 1}. ${track.title}</strong>
 												<button @click=${(event) => this.skipTrack(event, track)}>Skip</button>
-												<strong>${i}. ${track.artist} - ${track.title}</strong>
-												<a target="_blank" href=${track.url}>link</a>
 												<ul class="results">
 													${track.searchResults.map((video, i) =>
 														searchResultTemplate(track, i, video, this.youtubeResults),
@@ -154,16 +153,16 @@ burger ink elvism
 							`,
 						)}
 					</ul>
-					<p>Copy paste as CSV</p>
+					<p>CSV</p>
 					<textarea rows=${this.youtubeResults?.length}>
 title;youtube
 ${this.youtubeResults?.map((m) => `${m.title.replace(';', '')};${m.youtubeId}\n`)}</textarea
 					>
-					<p>Copy paste the YouTube IDs</p>
+					<p>YouTube IDs</p>
 					<textarea rows=${this.youtubeResults?.length}>
 ${this.youtubeResults?.map((m) => m.youtubeId + '\n')}</textarea
 					>
-					<p>Copy paste the YouTube URLs</p>
+					<p>YouTube URLs</p>
 					<textarea rows=${this.youtubeResults?.length}>
 ${this.youtubeResults?.map((m) => 'https://www.youtube.com/watch?v=' + m.youtubeId + '\n')}</textarea
 					>

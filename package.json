@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@github/tab-container-element": "^4.8.2",
     "lit": "^3.1.4"
   },
   "devdependencies": {

@@ -4,27 +4,56 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" href="data:;base64,iVBORw0KGgo=" />
-		<title>Spotify to YouTube</title>
+		<title>Spotify to YouTube to Text/CSV & Radio4000</title>
 		<link rel="stylesheet" href="./src/index.css" />
 		<script type="module" src="./src/main.js"></script>
 	</head>
 	<body>
 		<header>
-			<h1>Convert Spotify playlist &rarr;<br />YouTube videos &rarr;<br />Radio4000 tracks</h1>
-			<p>Did you just find a good Spotify playlist, but don't want to listen on Spotify?</p>
-			<p>
-				This tool helps you create a matching list of YouTube videos. Save as .txt and pipe it to
-				<code>yt-dlp</code>, or copy/paste as text or .csv, or even import directly into beta.radio4000.com.
-			</p>
+			<h1>
+				Convert music playlists &rarr;<br />Text, CSV, Spotify, YouTube
+				& Radio4000.
+			</h1>
+			<ul>
+				<li>Convert Spotify playlists to YouTube videos</li>
+				<li>Find matching YouTube videos from text playlists</li>
+			</ul>
+			<p>And then you could</p>
+			<ul>
+				<li>Save as .txt or .csv files for easy storage and sharing</li>
+				<li>Pipe to <code>yt-dlp</code> to download audio locally</li>
+				<li>Import your results to Radio4000</li>
+			</ul>
 		</header>
 
 		<main>
-			<text-to-youtube></text-to-youtube>
-			<spotify-to-youtube></spotify-to-youtube>
+			<tab-container>
+				<button
+					type="button"
+					id="tab-one"
+					role="tab"
+					aria-selected="true"
+				>
+					Spotify to YouTube
+				</button>
+				<button type="button" id="tab-two" role="tab" tabindex="-1">
+					Text to YouTube
+				</button>
+				<div role="tabpanel" aria-labelledby="tab-one">
+					<spotify-to-youtube></spotify-to-youtube>
+				</div>
+				<div role="tabpanel" aria-labelledby="tab-two" hidden>
+					<text-to-youtube></text-to-youtube>
+				</div>
+			</tab-container>
 		</main>
 
 		<footer>
-			<p><a href="https://github.com/oskarrough/spotify-to-youtube">View source</a></p>
+			<p>
+				<a href="https://github.com/oskarrough/spotify-to-youtube"
+					>View source</a
+				>
+			</p>
 		</footer>
 	</body>
 </html>

@@ -1,5 +1,6 @@
 import 'https://cdn.jsdelivr.net/npm/@radio4000/components/dist/r4.js'
 import 'https://cdn.jsdelivr.net/gh/oskarrough/rough-spinner/rough-spinner.js'
+import '@github/tab-container-element'
 
 import SpotifyToYoutube from './spotify-to-youtube.js'
 import TextToYoutube from './text-to-youtube.js'

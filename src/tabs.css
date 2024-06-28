@@ -1,0 +1,83 @@
+tab-container {
+	/* width: 100%; */
+	--tab-hover-color: orange;
+	--tab-selected-color: green;
+	--tab-border-color: hsl(219, 1%, 72%);
+	--tab-background-color: hsl(220, 20%, 94%);
+	--tab-selected-background-color: hsl(220, 43%, 99%);
+	--tabpanel-background-color: hsl(220, 43%, 99%);
+	--tabpanel-focus-border-color: hsl(20, 96%, 48%);
+}
+
+tab-container > [role="tablist"][aria-orientation="vertical"] {
+	display: flex;
+	flex-direction: column;
+}
+tab-container:has([aria-orientation="vertical"]) {
+	display: flex;
+	flex-direction: row;
+}
+tab-container:has([aria-orientation="vertical"]) [role="tabpanel"] {
+	flex: 1;
+}
+
+[role="tab"] {
+	position: relative;
+	margin: 0;
+	padding: 0.3em 0.5em 0.4em;
+	border: 1px solid var(--tab-border-color);
+	border-radius: 0.2em 0.2em 0 0;
+	overflow: visible;
+	font-family: inherit;
+	font-size: inherit;
+	background: var(--tab-background-color);
+}
+
+[role="tab"][aria-selected="true"] {
+	border-radius: 0;
+	background: var(--tab-selected-background-color);
+	outline: 0;
+}
+
+[role="tab"][aria-selected="true"]::after {
+	position: absolute;
+	z-index: 3;
+	bottom: -1px;
+	right: 0;
+	left: 0;
+	height: 0.3em;
+	background: var(--tab-selected-background-color);
+	content: "";
+}
+
+[role="tab"]:hover,
+[role="tab"]:focus,
+[role="tab"]:active {
+	outline: 0;
+	border-radius: 0;
+	color: inherit;
+}
+
+[role="tabpanel"] {
+	position: relative;
+	z-index: 2;
+	padding: 0.5em 0.5em 0;
+	border: 1px solid var(--tab-border-color);
+	border-radius: 0 0.2em 0.2em 0.2em;
+	background: var(--tabpanel-background-color);
+}
+
+[role="tabpanel"]:focus {
+	border-color: var(--tabpanel-focus-border-color);
+	outline: 0;
+}
+
+[role="tabpanel"]:focus::after {
+	position: absolute;
+	bottom: 0;
+	right: -1px;
+	left: -1px;
+	border-bottom: 3px solid var(--tabpanel-focus-border-color);
+	border-radius: 0 0 0.2em 0.2em;
+	content: "";
+}
