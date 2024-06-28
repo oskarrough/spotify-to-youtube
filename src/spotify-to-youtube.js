@@ -1,19 +1,15 @@
 import {LitElement, html} from 'https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js'
-import {
-	extractSpotifyPlaylistId,
-	getSpotifyPlaylist,
-	searchYoutube,
-} from './helpers.js'
+import {extractSpotifyPlaylistId, getSpotifyPlaylist, searchYoutube} from './helpers.js'
 
 export default class SpotifyToYoutube extends LitElement {
 	static get properties() {
 		return {
-			tracks: { type: Array, state: true },
-			matches: { type: Array, state: true },
-			loading: { type: Boolean, state: true },
-			confirmedMatches: { type: Boolean, state: true },
+			tracks: {type: Array, state: true},
+			matches: {type: Array, state: true},
+			loading: {type: Boolean, state: true},
+			confirmedMatches: {type: Boolean, state: true},
 			error: {type: String},
-			i: {type: Number}
+			i: {type: Number},
 		}
 	}
 
@@ -41,7 +37,7 @@ export default class SpotifyToYoutube extends LitElement {
 		try {
 			const playlistId = extractSpotifyPlaylistId(formData.get('url'))
 			const playlist = await getSpotifyPlaylist(playlistId)
-      if (!playlist) throw new Error('Failed to fetch Spotify playlist')
+			if (!playlist) throw new Error('Failed to fetch Spotify playlist')
 			this.tracks = this.maxTracks ? playlist.tracks.slice(0, this.maxTracks) : playlist.tracks
 			// Search YouTube and render as results come in
 			await Promise.allSettled(
@@ -54,8 +50,8 @@ export default class SpotifyToYoutube extends LitElement {
 						.catch((error) => {
 							console.error('An error occurred:', error)
 							this.error = error.message
-						})
-				)
+						}),
+				),
 			)
 			console.log('Setting tracks', this.tracks)
 			localStorage.setItem('syr.tracks', JSON.stringify(this.tracks))
@@ -81,7 +77,7 @@ export default class SpotifyToYoutube extends LitElement {
 		for (const [spotifyId, youtubeId] of fd.entries()) {
 			const spotifyTrack = this.tracks.find((t) => t.id === spotifyId)
 			const title = spotifyTrack.artist + ' - ' + spotifyTrack.title
-			const track = { spotifyId, youtubeId, title, url: 'https://www.youtube.com/watch?v=' + youtubeId }
+			const track = {spotifyId, youtubeId, title, url: 'https://www.youtube.com/watch?v=' + youtubeId}
 			matches.push(track)
 		}
 		this.matches = matches
@@ -99,99 +95,108 @@ export default class SpotifyToYoutube extends LitElement {
 
 	skipTrack(event, track) {
 		event.preventDefault()
-		this.tracks = this.tracks.filter(t => t.id !== track.id)
+		this.tracks = this.tracks.filter((t) => t.id !== track.id)
 		localStorage.setItem('syr.tracks', JSON.stringify(this.tracks))
 	}
 
 	render() {
 		return html`
-			${this.tracks?.length ? html`
-				<p><button @click=${this.clearMatches}>Start over</button></p>` : null}
+			${this.tracks?.length ? html` <p><button @click=${this.clearMatches}>Start over</button></p>` : null}
 			<section spotify>
-			<details ?open=${!this.tracks?.length}>
-				<summary>Step 1. Import Spotify playlist</summary>
-        <form @submit=${this.findMatches}>
-          <label for="url">URL</label>
-          <input
-            type="text"
-            name="url"
-            value="https://open.spotify.com/playlist/7kqQXkLFuIZFScIuXFaJHe"
-						valuePrivatePlaylist="https://open.spotify.com/playlist/44l2AC9bKrAnMTSz7eIe7H"
-            required
-          /><br />
-          <button type="submit" ?disabled=${this.loading}>Find matching YouTube videos</button>
-        </form>
-				${this.error ? html`
-					<p>Error! Could not fetch this playlist. Is it public?<br/><code>${this.error}</code></p> ` : null}
-				<p ?hidden=${!this.loading}>
-					Matching ${Number(this.i || 0) + 1}/${this.tracks?.length}...
-					<rough-spinner spinner="1" fps="30"></rough-spinner><br />
-				</p>
-			</details>
-
+				<details ?open=${!this.tracks?.length}>
+					<summary>Step 1. Import Spotify playlist</summary>
+					<form @submit=${this.findMatches}>
+						<label for="url">URL</label>
+						<input
+							type="text"
+							name="url"
+							value="https://open.spotify.com/playlist/7kqQXkLFuIZFScIuXFaJHe"
+							valuePrivatePlaylist="https://open.spotify.com/playlist/44l2AC9bKrAnMTSz7eIe7H"
+							required
+						/><br />
+						<button type="submit" ?disabled=${this.loading}>Find matching YouTube videos</button>
+					</form>
+					${this.error
+						? html` <p>Error! Could not fetch this playlist. Is it public?<br /><code>${this.error}</code></p> `
+						: null}
+					<p ?hidden=${!this.loading}>
+						Matching ${Number(this.i || 0) + 1}/${this.tracks?.length}...
+						<rough-spinner spinner="1" fps="30"></rough-spinner><br />
+					</p>
+				</details>
 			</section>
 
 			<section youtube>
-			<details ?open=${this.tracks?.length && !this.confirmedMatches}>
-				<summary>Step 2. Confirm your YouTube tracks</summary>
-				<p>For each track decide which matching YouTube video to keep, or skip.</p>
-				${this.tracks?.length ? html`
-					<form id="tracksform" @input=${this.saveMatchingVideos} @submit=${this.confirmMatches}>
-						<ul class="tracks">
-							${this.tracks?.map((track, i) => html`
-								<li>
-									<button @click=${(event) => this.skipTrack(event, track)}>Skip</button>
-									<strong>${i}. ${track.artist} - ${track.title}</strong>
-									<a target="_blank" href=${track.url}>link</a>
-									<ul class="results">
-										${track.searchResults.map((video, i) => searchResultTemplate(track, i, video, this.matches))}
-									</ul>
-								</li>
-							`)}
-						</ul>
-						<p>
-							<button type="submit">Confirm matches</button> or <button @click=${this.clearMatches}>Start over</button>
-						</p>
-					</form>`
-					: ''}
-			</details>
+				<details ?open=${this.tracks?.length && !this.confirmedMatches}>
+					<summary>Step 2. Confirm your YouTube tracks</summary>
+					<p>For each track decide which matching YouTube video to keep, or skip.</p>
+					${this.tracks?.length
+						? html` <form id="tracksform" @input=${this.saveMatchingVideos} @submit=${this.confirmMatches}>
+								<ul class="tracks">
+									${this.tracks?.map(
+										(track, i) => html`
+											<li>
+												<button @click=${(event) => this.skipTrack(event, track)}>Skip</button>
+												<strong>${i}. ${track.artist} - ${track.title}</strong>
+												<a target="_blank" href=${track.url}>link</a>
+												<ul class="results">
+													${track.searchResults.map((video, i) => searchResultTemplate(track, i, video, this.matches))}
+												</ul>
+											</li>
+										`,
+									)}
+								</ul>
+								<p>
+									<button type="submit">Confirm matches</button> or
+									<button @click=${this.clearMatches}>Start over</button>
+								</p>
+							</form>`
+						: ''}
+				</details>
 			</section>
 
-
 			<section matches>
-			<details>
-				<summary>3. Step 3</summary>
-				<p>There is no step 3.</p>
-			</details>
+				<details>
+					<summary>3. Step 3</summary>
+					<p>There is no step 3.</p>
+				</details>
 
-			<details ?open=${this.confirmedMatches && this.matches?.length}>
-				<summary>Results</summary>
-				<p>Here are the tracks you chose. Do with it as you please.</p>
-				<ul>
-				${this.matches?.map((match, i) => html`
-					<li>
-						<strong>${i}. ${match.title}</strong>
-					</li>
-				`)}
-				</ul>
-				<p>Copy paste as CSV</p>
-				<textarea rows=${this.matches?.length}>title;spotify;youtube
-${this.matches?.map(m => `${m.title.replace(';', '')};${m.spotifyId};${m.youtubeId}\n`)}</textarea>
-				<p>Copy paste the YouTube IDs</p>
-				<textarea rows=${this.matches?.length}>${this.matches?.map(m => m.youtubeId + '\n')}</textarea>
-				<p>Copy paste the YouTube URLs</p>
-				<textarea rows=${this.matches?.length}>${this.matches?.map(m => 'https://www.youtube.com/watch?v=' + m.youtubeId + '\n')}</textarea>
-				<p>Copy paste to <a href="https://text.radio4000.com">r4-text</a></p>
-				<textarea rows=${this.matches?.length}>${this.matches?.map(m => m.title+'\n'+'https://www.youtube.com/watch?v=' + m.youtubeId + '\n\n')}</textarea>
-			</details>
+				<details ?open=${this.confirmedMatches && this.matches?.length}>
+					<summary>Results</summary>
+					<p>Here are the tracks you chose. Do with it as you please.</p>
+					<ul>
+						${this.matches?.map(
+							(match, i) => html`
+								<li>
+									<strong>${i}. ${match.title}</strong>
+								</li>
+							`,
+						)}
+					</ul>
+					<p>Copy paste as CSV</p>
+					<textarea rows=${this.matches?.length}>
+title;spotify;youtube
+${this.matches?.map((m) => `${m.title.replace(';', '')};${m.spotifyId};${m.youtubeId}\n`)}</textarea
+					>
+					<p>Copy paste the YouTube IDs</p>
+					<textarea rows=${this.matches?.length}>${this.matches?.map((m) => m.youtubeId + '\n')}</textarea>
+					<p>Copy paste the YouTube URLs</p>
+					<textarea rows=${this.matches?.length}>
+${this.matches?.map((m) => 'https://www.youtube.com/watch?v=' + m.youtubeId + '\n')}</textarea
+					>
+					<p>Copy paste to <a href="https://text.radio4000.com">r4-text</a></p>
+					<textarea rows=${this.matches?.length}>
+${this.matches?.map((m) => m.title + '\n' + 'https://www.youtube.com/watch?v=' + m.youtubeId + '\n\n')}</textarea
+					>
+				</details>
 			</section>
 
 			<section r4>
-			<details ?open=${this.matches?.length}>
-				<summary>Optional step 4. Import tracks to Radio4000 beta</summary>
-				<p><small>Note, already imported tracks will be duplicated.</small></p>
-				<r4-batch-import .matches=${this.matches}></r4-batch-import>
-			</details>
+				<details ?open=${this.matches?.length}>
+					<summary>Optional step 4. Import tracks to Radio4000 beta</summary>
+					<p><small>Note, already imported tracks will be duplicated.</small></p>
+					<r4-batch-import .matches=${this.matches}></r4-batch-import>
+				</details>
 			</section>
 		`
 	}

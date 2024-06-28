@@ -9,12 +9,12 @@ export function extractSpotifyPlaylistId(url) {
 export async function getSpotifyPlaylist(id) {
 	const url = `https://medianow.deno.dev/spotify/playlists/${id}`
 	try {
-        const response = await fetch(url)
-        const res = await response.json()
-        return parseSpotifyPlaylistReponse(res)
-    } catch (error) {
-        throw new Error(error.message)
-    }
+		const response = await fetch(url)
+		const res = await response.json()
+		return parseSpotifyPlaylistReponse(res)
+	} catch (error) {
+		throw new Error(error.message)
+	}
 }
 
 // Take what we need from the Spotify API playlist response.

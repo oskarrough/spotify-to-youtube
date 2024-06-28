@@ -11,8 +11,15 @@
   "dependencies": {
     "lit": "^3.1.4"
   },
-  "devDependencies": {
+  "devdependencies": {
     "eslint": "^9.5.0",
     "vite": "^5.3.2"
+  },
+  "prettier": {
+    "bracketspacing": false,
+    "printwidth": 120,
+    "singlequote": true,
+    "usetabs": true,
+    "semi": false
   }
 }

@@ -1,15 +1,15 @@
-import { LitElement, html } from 'https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js'
-import { searchYoutube } from './helpers.js'
+import {LitElement, html} from 'https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js'
+import {searchYoutube} from './helpers.js'
 
 export default class TextToYoutube extends LitElement {
 	static get properties() {
 		return {
-			inputLines: { type: Array, state: true },
-			youtubeResults: { type: Array, state: true },
-			loading: { type: Boolean, state: true },
-			didConfirmYoutubeResults: { type: Boolean, state: true },
-			error: { type: String },
-			i: { type: Number },
+			inputLines: {type: Array, state: true},
+			youtubeResults: {type: Array, state: true},
+			loading: {type: Boolean, state: true},
+			didConfirmYoutubeResults: {type: Boolean, state: true},
+			error: {type: String},
+			i: {type: Number},
 		}
 	}
 
@@ -42,8 +42,8 @@ export default class TextToYoutube extends LitElement {
 					.catch((error) => {
 						console.error('An error occurred:', error)
 						this.error = error.message
-					})
-			)
+					}),
+			),
 		)
 		this.loading = false
 		console.log('updated inputLines', this.inputLines)
@@ -62,7 +62,11 @@ export default class TextToYoutube extends LitElement {
 		const results = []
 		for (const [id, youtubeId] of fd.entries()) {
 			const internalTrack = this.inputLines.find((t) => t.id === id)
-			const track = { ...internalTrack, youtubeId, url: 'https://www.youtube.com/watch?v=' + youtubeId }
+			const track = {
+				...internalTrack,
+				youtubeId,
+				url: 'https://www.youtube.com/watch?v=' + youtubeId,
+			}
 			results.push(track)
 		}
 		this.youtubeResults = results
@@ -72,6 +76,7 @@ export default class TextToYoutube extends LitElement {
 	clearMatches() {
 		this.inputLines = []
 		this.youtubeResults = []
+		this.i = 0
 	}
 
 	skipTrack(event, track) {
@@ -96,9 +101,7 @@ burger ink elvism
 						<button type="submit" ?disabled=${this.loading}>Import</button>
 					</form>
 					${this.error
-						? html`
-								<p>Error! Could not fetch this playlist. Is it public?<br /><code>${this.error}</code></p>
-						  `
+						? html` <p>Error! Could not fetch this playlist. Is it public?<br /><code>${this.error}</code></p> `
 						: null}
 					<p ?hidden=${!this.loading}>
 						Matching ${Number(this.i || 0) + 1}/${this.inputLines?.length}...
@@ -122,18 +125,18 @@ burger ink elvism
 												<a target="_blank" href=${track.url}>link</a>
 												<ul class="results">
 													${track.searchResults.map((video, i) =>
-														searchResultTemplate(track, i, video, this.youtubeResults)
+														searchResultTemplate(track, i, video, this.youtubeResults),
 													)}
 												</ul>
 											</li>
-										`
+										`,
 									)}
 								</ul>
 								<p>
 									<button type="submit">Confirm matches</button> or
 									<button @click=${this.clearMatches}>Start over</button>
 								</p>
-						  </form>`
+							</form>`
 						: ''}
 				</details>
 			</section>
@@ -148,7 +151,7 @@ burger ink elvism
 								<li>
 									<strong>${i}. ${match.title}</strong>
 								</li>
-							`
+							`,
 						)}
 					</ul>
 					<p>Copy paste as CSV</p>
@@ -177,7 +180,7 @@ ${this.youtubeResults?.map((m) => 'https://www.youtube.com/watch?v=' + m.youtube
 
 function selectedVideo(event) {
 	const top = event.target.closest('ul').parentElement.nextElementSibling?.offsetTop
-	if (top) window.scrollTo({ top, behaviour: 'smooth' })
+	if (top) window.scrollTo({top, behaviour: 'smooth'})
 }
 
 const searchResultTemplate = (track, index, video, matches) => html`
@@ -193,7 +196,9 @@ const searchResultTemplate = (track, index, video, matches) => html`
 			<img src=${video.thumbnail} alt=${video.title} />
 		</label>
 		<ul>
-			<li><a href=${`https://www.youtube.com/watch?v=` + video.id} target="_blank">${video.title}</a></li>
+			<li>
+				<a href=${`https://www.youtube.com/watch?v=` + video.id} target="_blank">${video.title}</a>
+			</li>
 			${video.description ? html`<li>${video.description}</li>` : ''}
 			<li>
 				<small>
