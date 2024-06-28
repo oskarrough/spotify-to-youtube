@@ -16,7 +16,7 @@ export default class TextToYoutube extends LitElement {
 	maxSearchResults = 3
 
 	// Updates this.tracks
-	async findMatches(event) {
+	async updateInputLines(event) {
 		event.preventDefault()
 		this.loading = true
 		const $form = event.target
@@ -52,7 +52,7 @@ export default class TextToYoutube extends LitElement {
 	confirmMatches(event) {
 		event.preventDefault()
 		this.saveMatchingVideos()
-		this.didConfirmMatches = true
+		this.didConfirmYoutubeResults = true
 		console.log('confirmed matches')
 	}
 
@@ -90,7 +90,7 @@ export default class TextToYoutube extends LitElement {
 			<section>
 				<details open>
 					<summary>Step 1. Enter your playlist as text</summary>
-					<form @submit=${this.findMatches}>
+					<form @submit=${this.updateInputLines}>
 						<label for="text_playlist">One track per line</label><br />
 						<textarea name="text_playlist" id="text_playlist" required>
 joy orbison in drink
@@ -111,7 +111,7 @@ burger ink elvism
 			</section>
 
 			<section youtube>
-				<details ?open=${this.inputLines?.length && !this.didConfirmMatches}>
+				<details ?open=${this.inputLines?.length && !this.didConfirmYoutubeResults}>
 					<summary>Step 2. Confirm your YouTube tracks</summary>
 					<p>For each track decide which matching YouTube video to keep, or skip.</p>
 					${this.inputLines?.length
@@ -141,14 +141,14 @@ burger ink elvism
 			</section>
 
 			<section matches>
-				<details ?open=${this.didConfirmMatches && this.youtubeResults?.length}>
+				<details ?open=${this.didConfirmYoutubeResults && this.youtubeResults?.length}>
 					<summary>Results</summary>
-					<p>Here are the tracks you chose. Do with it as you please.</p>
+					<p>Here are your tracks. Do with it as you please.</p>
 					<ul>
 						${this.youtubeResults?.map(
 							(match, i) => html`
 								<li>
-									<strong>${i}. ${match.title}</strong>
+									<strong>${i + 1}. ${match.title}</strong>
 								</li>
 							`,
 						)}
