@@ -10,11 +10,11 @@
   },
   "dependencies": {
     "@github/tab-container-element": "^4.8.2",
-    "lit": "^3.1.4"
+    "lit": "^3.1.4",
+    "vite": "^5.3.2"
   },
   "devdependencies": {
-    "eslint": "^9.5.0",
-    "vite": "^5.3.2"
+    "eslint": "^9.5.0"
   },
   "prettier": {
     "bracketSpacing": false,
