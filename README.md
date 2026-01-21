@@ -5,9 +5,12 @@ A set of JavaScript functions and a web component to help convert the tracks in 
 1. Input a Spotify playlist URL (limit 500 tracks)
 2. Allow the tool to search for possible matching YouTube videos
 3. Select the matches you want
-4. Import list of YouTube videos into Radio4000 (beta)
+4. Export to text or json
+5. Optionally sign in and import tracks to Radio4000
 
 Try it out on https://oskarrough.github.io/spotify-to-youtube/
+
+Questions? Come chat https://matrix.to/#/#radio4000:matrix.org
 
 ## Development
 
