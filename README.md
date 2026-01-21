@@ -8,7 +8,7 @@ A set of JavaScript functions and a web component to help convert the tracks in 
 4. Export to text or json
 5. Optionally sign in and import tracks to Radio4000
 
-Try it out on https://oskarrough.github.io/spotify-to-youtube/
+Try it out on https://spotify-youtube.0sk.ar/ 
 
 Questions? Come chat https://matrix.to/#/#radio4000:matrix.org
 
@@ -19,7 +19,7 @@ Questions? Come chat https://matrix.to/#/#radio4000:matrix.org
 - It reads data from Spotify and YouTube via https://github.com/radio4000/media-now-deno
 - It inserts data into Radio4000 using https://github.com/radio4000/sdk
 
-```
+```mermaid
 graph TD
   url[Spotify Playlist URL] -->|parse string| id[Playlist ID]
    -->|Spotify API| playlist[Playlist with tracks] -->|YouTube API| searchResults[Find matching YouTube videos]
